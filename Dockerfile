@@ -7,6 +7,7 @@ RUN set -ex; \
     apt update; \
     apt install -y --no-install-recommends \
         curl \
+        openssl \
         unzip \
         mergerfs \
         cron; \
