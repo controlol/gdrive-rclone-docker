@@ -37,13 +37,7 @@ RUN set -ex; \
     /var/log/rclone \
     /gdrive \
     # mount point for gdrive
-    /gdrive-cloud \
-    # the merged fs
-    /gdrive/remote \
-    # local cache for gdrive
-    /gdrive/cache \
-    # new local only files
-    /gdrive/local;
+    /gdrive-cloud
 
 # # required ENV
 # ENV PASSWORD
