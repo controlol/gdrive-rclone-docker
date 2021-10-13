@@ -25,10 +25,15 @@ RUN set -ex; \
     ln -s /root/.config/rclone /config
 
 RUN set -ex; \
-    mkdir /var/log/rclone;
-
-RUN set -ex; \
-    mkdir /gdrive-cloud /gdrive-local
+    mkdir \
+    # logs for rclone
+    /var/log/rclone \
+    # local cache for gdrive
+    /local-cache \
+    # mount point for gdrive
+    /gdrive-cloud \
+    # new local only files
+    /gdrive-local;
 
 # # required ENV
 # ENV PASSWORD
@@ -41,16 +46,8 @@ RUN set -ex; \
 # ENV LOCAL_CACHE_SIZE
 # ENV LOCAL_CACHE_TIME
 
-# service files
-ADD ./gdrive-services /gdrive-services
-RUN set -ex; \
-    mkdir /etc/services.d/mergerfs; \
-    cp /gdrive-services/gdrive-mergerfs.service /etc/services.d/mergerfs/run
-
-# copy entrypoint to run when the container starts
-ADD ./10-prepare-rclone.sh /etc/cont-init.d/10-prepare-rclone.sh
-# RUN set -ex; \
-#     chmod +x /entrypoint.sh
+# s6 files
+ADD ./etc /etc
 
 VOLUME /remote
 VOLUME /local-cache
