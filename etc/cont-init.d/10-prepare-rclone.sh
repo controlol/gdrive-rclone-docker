@@ -68,3 +68,4 @@ sed -i "s,<gdrive-rclone>,$rclone_remote,g" run finish
 echo "Creating cron task"
 mkdir /etc/crontabs
 echo "0 */6 * * * /usr/bin/rclone move /gdrive-local $rclone_remote: --config /config/rclone.conf --log-file /var/log/rclone/upload.log --log-level INFO --delete-empty-src-dirs --fast-list --min-age 6h" > /etc/crontabs/root
+crontab /etc/crontabs/root
