@@ -60,9 +60,8 @@ if [ ! -f "/config/rclone.conf" ]; then
   sed -i "s,<cache-time>,$LOCAL_CACHE_TIME,g" gdrive-rclone.service
   sed -i "s,<gdrive-rclone>,$rclone_remote,g" gdrive-rclone.service
 
-  cp gdrive-rclone.service /etc/services.d
-  system enable gdrive-rclone.service
-  system start gdrive-rclone.service
+  mkdir /etc/services.d/rclone
+  cp gdrive-rclone.service /etc/services.d/rclone/run
 
   # create cronjob task
   echo "0 */6 * * * /usr/bin/rclone move /gdrive-local $rclone_remote: --config /config/rclone.conf --log-file /var/log/rclone/upload.log --log-level INFO --delete-empty-src-dirs --fast-list --min-age 6h" > /var/spool/cron/crontabs/root
