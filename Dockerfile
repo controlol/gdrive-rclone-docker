@@ -35,6 +35,7 @@ RUN set -ex; \
     mkdir \
     # logs for rclone
     /var/log/rclone \
+    /gdrive \
     # mount point for gdrive
     /gdrive-cloud \
     # the merged fs
