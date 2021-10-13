@@ -35,12 +35,14 @@ RUN set -ex; \
     mkdir \
     # logs for rclone
     /var/log/rclone \
-    # local cache for gdrive
-    /local-cache \
     # mount point for gdrive
     /gdrive-cloud \
+    # the merged fs
+    /gdrive/remote \
+    # local cache for gdrive
+    /gdrive/cache \
     # new local only files
-    /gdrive-local;
+    /gdrive/local;
 
 # # required ENV
 # ENV PASSWORD
@@ -56,9 +58,11 @@ RUN set -ex; \
 # s6 files
 ADD ./etc /etc
 
-VOLUME /remote
-VOLUME /local-cache
-VOLUME /gdrive-local
+VOLUME /gdrive
+
+# VOLUME /remote
+# VOLUME /local-cache
+# VOLUME /gdrive-local
 
 # config volume, should contain the RCLONE config file with gdrive remote named gdrive-rclone.conf
 VOLUME /config
