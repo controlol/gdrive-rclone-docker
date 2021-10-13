@@ -69,3 +69,6 @@ echo "Creating cron task"
 mkdir /etc/crontabs
 echo "0 */6 * * * /usr/bin/rclone move /gdrive-local $rclone_remote: --config /config/rclone.conf --log-file /var/log/rclone/upload.log --log-level INFO --delete-empty-src-dirs --fast-list --min-age 6h" > /etc/crontabs/root
 crontab /etc/crontabs/root
+
+echo "Mounting mergerfs"
+/usr/bin/mergerfs /gdrive-local:/gdrive-cloud /remote -o rw,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=auto-full,nonempty

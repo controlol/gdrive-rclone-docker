@@ -60,8 +60,6 @@ VOLUME /remote
 VOLUME /local-cache
 VOLUME /gdrive-local
 
-RUN /usr/bin/mergerfs /gdrive-local:/gdrive-cloud /remote -o rw,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=auto-full,nonempty
-
 # config volume, should contain the RCLONE config file with gdrive remote named gdrive-rclone.conf
 VOLUME /config
 
