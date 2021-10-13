@@ -65,7 +65,7 @@ docker run -d \
   -v /path/to/remote:/remote:rw,shared \
   --cap-add SYS_ADMIN --device /dev/fuse \
   --restart unless-stopped \
-  gdrive-rclone
+  ghcr.io/controlol/gdrive-rclone
 ```
 
 ### Volumes
