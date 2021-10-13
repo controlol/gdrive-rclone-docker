@@ -21,6 +21,14 @@ if [ ! -f "/config/rclone.conf" ]; then
     echo "Please set RCLONE_REMOTE environment"
     exit 1
   fi
+  if [ -z "${LOCAL_CACHE_SIZE}" ]; then
+    echo "Please set LOCAL_CACHE_SIZE environment"
+    exit 1
+  fi
+  if [ -z "${LOCAL_CACHE_TIME}" ]; then
+    echo "Please set LOCAL_CACHE_TIME environment"
+    exit 1
+  fi
 
   # chekc if base config file exists
   if [ ! -f "/config/gdrive-rclone.conf" ]; then
@@ -40,7 +48,7 @@ if [ ! -f "/config/rclone.conf" ]; then
     remote="$RCLONE_REMOTE:/$folder"
     rclone_remote=$RCLONE_REMOTE-crypt-$RCLONE_FOLDER
 
-    rclone config create "rclone_remote" crypt remote=$remote password=$pwobscure password2=$pwobscurehash
+    rclone config create "$rclone_remote" crypt remote=$remote password=$pwobscure password2=$pwobscurehash
   # done
 
   echo "Creating rclone service"
@@ -50,12 +58,12 @@ if [ ! -f "/config/rclone.conf" ]; then
 
   sed -i 's,<cache-size>,/$LOCAL_CACHE_SIZE,g' *
   sed -i 's,<cache-time>,$LOCAL_CACHE_TIME,g' *
-  sed -i 's,<gdrive-rclone>,rclone_remote,g' *
+  sed -i 's,<gdrive-rclone>,$rclone_remote,g' *
 
   cp gdrive-rclone.service /etc/services.d
   system enable gdrive-rclone.service
   system start gdrive-rclone.service
 
   # create cronjob task
-  echo "0 */6 * * * /usr/bin/rclone move /gdrive-local rclone_remote: --config /config/rclone.conf --log-file /var/log/rclone/upload.log --log-level INFO --delete-empty-src-dirs --fast-list --min-age 6h" > /var/spool/cron/crontabs/root
+  echo "0 */6 * * * /usr/bin/rclone move /gdrive-local $rclone_remote: --config /config/rclone.conf --log-file /var/log/rclone/upload.log --log-level INFO --delete-empty-src-dirs --fast-list --min-age 6h" > /var/spool/cron/crontabs/root
 fi
