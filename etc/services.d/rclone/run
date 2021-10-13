@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bash
+set -x
 
 /usr/bin/rclone mount \
   --config=/config/rclone.conf \
