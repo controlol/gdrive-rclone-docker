@@ -1,0 +1,3 @@
+#!/usr/bin/with-contenv bash
+
+/usr/bin/mergerfs /gdrive-local:/gdrive-cloud /remote -o rw,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=auto-full
