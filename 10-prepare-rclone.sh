@@ -38,27 +38,27 @@ if [ ! -f "/config/rclone.conf" ]; then
 
   cp /config/gdrive-rclone.conf /config/rclone.conf
 
-  pwobscure=$(rclone obscure $PASSWORD)
-  pwobscurehash=$(rclone obscure $PASSWORD2)
+  pwobscure=$(rclone obscure "$PASSWORD")
+  pwobscurehash=$(rclone obscure "$PASSWORD2")
 
   # IFS=' ' read -r -a array <<< "$RCLONE_FOLDER"
 
   # for folder in "${array[@]}"
   # do
-    remote="$RCLONE_REMOTE:/$folder"
-    rclone_remote=$RCLONE_REMOTE-crypt-$RCLONE_FOLDER
+    remote="$RCLONE_REMOTE:/$RCLONE_FOLDER"
+    rclone_remote="$RCLONE_REMOTE-crypt-$RCLONE_FOLDER"
 
-    rclone config create "$rclone_remote" crypt remote=$remote password=$pwobscure password2=$pwobscurehash
+    rclone config create "$rclone_remote" crypt remote="$remote" password="$pwobscure" password2="$pwobscurehash"
   # done
 
   echo "Creating rclone service"
 
   # create gdrive-rclone service
-  cd /gdrive-services
+  cd /gdrive-services || exit 1
 
-  sed -i 's,<cache-size>,/$LOCAL_CACHE_SIZE,g' *
-  sed -i 's,<cache-time>,$LOCAL_CACHE_TIME,g' *
-  sed -i 's,<gdrive-rclone>,$rclone_remote,g' *
+  sed -i "s,<cache-size>,/$LOCAL_CACHE_SIZE,g" gdrive-rclone.service
+  sed -i "s,<cache-time>,$LOCAL_CACHE_TIME,g" gdrive-rclone.service
+  sed -i "s,<gdrive-rclone>,$rclone_remote,g" gdrive-rclone.service
 
   cp gdrive-rclone.service /etc/services.d
   system enable gdrive-rclone.service
