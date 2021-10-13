@@ -40,7 +40,7 @@ RUN set -ex; \
 # service files
 ADD ./gdrive-services /gdrive-services
 RUN set -ex; \
-    cp /gdrive-services/gdrive-mergerfs.service /bin/init.d/system; \
+    cp /gdrive-services/gdrive-mergerfs.service /bin/init.d; \
     service enable gdrive-mergerfs.service
 
 # copy entrypoint to run when the container starts
