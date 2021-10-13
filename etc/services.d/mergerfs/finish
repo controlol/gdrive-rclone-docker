@@ -1,5 +1,5 @@
 #!/usr/bin/with-contenv bash
 
-touch /config secretfile
+touch /config/secretfile
 
 /bin/fusermount -uz /remote
