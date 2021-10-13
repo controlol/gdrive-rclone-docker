@@ -26,16 +26,16 @@ RUN set -ex; \
 RUN set -ex; \
     mkdir /gdrive-cloud /gdrive-local
 
-# required ENV
-ENV PASSWORD
-ENV PASSWORD_HASH
-# folders seperated by a space
-ENV RCLONE_FOLDER
-# remote from the config file
-ENV RCLONE_REMOTE
-# cache variables
-ENV LOCAL_CACHE_SIZE
-ENV LOCAL_CACHE_TIME
+# # required ENV
+# ENV PASSWORD
+# ENV PASSWORD_HASH
+# # folders seperated by a space
+# ENV RCLONE_FOLDER
+# # remote from the config file
+# ENV RCLONE_REMOTE
+# # cache variables
+# ENV LOCAL_CACHE_SIZE
+# ENV LOCAL_CACHE_TIME
 
 # service files
 ADD ./gdrive-services /gdrive-services
