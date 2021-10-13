@@ -58,7 +58,7 @@ fi
 echo "Creating rclone service"
 
 # create gdrive-rclone service
-cd /etc/services.d/rclone || exit 1
+cd /etc/services.d/10-rclone || exit 1
 
 sed -i "s,<cache-size>,$LOCAL_CACHE_SIZE,g" run finish
 sed -i "s,<cache-time>,$LOCAL_CACHE_TIME,g" run finish
