@@ -1,0 +1,14 @@
+[Unit]
+Description=Gmedia MergerFS Mount
+Requires=gmedia.service
+After=gmedia.service
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/mergerfs /gdrive-local:/gdrive-cloud /remote -o rw,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=auto-full
+ExecStop=/bin/fusermount -uz /remote
+KillMode=none
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
