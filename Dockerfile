@@ -18,15 +18,13 @@ RUN set -ex; \
 ADD https://github.com/just-containers/s6-overlay/releases/download/v2.2.0.1/s6-overlay-amd64-installer /tmp/
 RUN set -ex; \
     chmod +x /tmp/s6-overlay-amd64-installer; \
-    /tmp/s6-overlay-amd64-installer /; \
-    rm -r /tmp
+    /tmp/s6-overlay-amd64-installer /
 
 # install rclone script
 ADD https://rclone.org/install.sh /tmp/
 RUN set -ex; \
     chmod +x /tmp/install.sh; \
-    /tmp/install.sh; \
-    rm -r /tmp
+    /tmp/install.sh
 
 # setup config directory
 RUN set -ex; \
