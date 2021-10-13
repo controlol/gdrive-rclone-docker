@@ -9,7 +9,8 @@ RUN set -ex; \
         curl \
         ca-certificates \
         unzip \
-        mergerfs \
+        mergerfs; \
+    apt install -y \
         cron; \
     rm -rf /var/lib/apt/lists/*
 
