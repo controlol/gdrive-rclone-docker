@@ -1,4 +1,4 @@
-#!/usr/bin/execlineb -P
+#!/usr/bin/with-contenv bash
 with-contenv
 
 if [ ! -f "/config/rclone.conf" ]; then
