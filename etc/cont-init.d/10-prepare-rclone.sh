@@ -64,14 +64,9 @@ sed -i "s,<cache-size>,$LOCAL_CACHE_SIZE,g" run finish
 sed -i "s,<cache-time>,$LOCAL_CACHE_TIME,g" run finish
 sed -i "s,<gdrive-rclone>,$rclone_remote,g" run finish
 
-# create mountable folders
-mkdir \
-\  # the merged fs
-  /gdrive/remote \
-\  # local cache for gdrive
-  /gdrive/cache \
-\  # new local only files
-  /gdrive/local;
+# create mountable folders 
+# the merged fs - local cache for gdrive - new local only files
+mkdir gdrive/remote gdrive/cache /gdrive/local
 
 # create cronjob task
 echo "Creating cron task"
