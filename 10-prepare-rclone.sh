@@ -38,8 +38,8 @@ if [ ! -f "/config/rclone.conf" ]; then
 
   cp /config/gdrive-rclone.conf /config/rclone.conf
 
-  pwobscure=$(rclone obscure "$PASSWORD")
-  pwobscurehash=$(rclone obscure "$PASSWORD2")
+  pwobscure=$(/usr/bin/rclone obscure "$PASSWORD")
+  pwobscurehash=$(/usr/bin/rclone obscure "$PASSWORD2")
 
   # IFS=' ' read -r -a array <<< "$RCLONE_FOLDER"
 
@@ -48,7 +48,7 @@ if [ ! -f "/config/rclone.conf" ]; then
     remote="$RCLONE_REMOTE:/$RCLONE_FOLDER"
     rclone_remote="$RCLONE_REMOTE-crypt-$RCLONE_FOLDER"
 
-    rclone config create "$rclone_remote" crypt remote="$remote" password="$pwobscure" password2="$pwobscurehash"
+    /usr/bin/rclone config create "$rclone_remote" crypt remote="$remote" password="$pwobscure" password2="$pwobscurehash"
   # done
 
   echo "Creating rclone service"
