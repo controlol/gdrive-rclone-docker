@@ -1,6 +1,9 @@
 #!/usr/bin/with-contenv bash
 set -eu
 
+rclone_remote="$RCLONE_REMOTE-crypt-$RCLONE_FOLDER"
+
+
 if [ ! -f "/config/rclone.conf" ]; then
   echo "Creating rclone config file"
 
@@ -46,7 +49,6 @@ if [ ! -f "/config/rclone.conf" ]; then
   # for folder in "${array[@]}"
   # do
     remote="$RCLONE_REMOTE:/$RCLONE_FOLDER"
-    rclone_remote="$RCLONE_REMOTE-crypt-$RCLONE_FOLDER"
 
     /usr/bin/rclone config create "$rclone_remote" crypt remote="$remote" password="$pwobscure" password2="$pwobscurehash"
   # done
@@ -60,8 +62,9 @@ cd /etc/services.d/rclone || exit 1
 
 sed -i "s,<cache-size>,$LOCAL_CACHE_SIZE,g" run finish
 sed -i "s,<cache-time>,$LOCAL_CACHE_TIME,g" run finish
-sed -i "s,<gdrive-rclone>,$RCLONE_REMOTE-crypt-$RCLONE_FOLDER,g" run finish
+sed -i "s,<gdrive-rclone>,$rclone_remote,g" run finish
 
 # create cronjob task
 echo "Creating cron task"
+mkdir /etc/crontabs
 echo "0 */6 * * * /usr/bin/rclone move /gdrive-local $rclone_remote: --config /config/rclone.conf --log-file /var/log/rclone/upload.log --log-level INFO --delete-empty-src-dirs --fast-list --min-age 6h" > /etc/crontabs/root
