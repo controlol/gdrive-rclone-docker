@@ -44,13 +44,12 @@ RUN set -ex; \
 # service files
 ADD ./gdrive-services /gdrive-services
 RUN set -ex; \
-    mkdir /etc/services.d; \
     cp /gdrive-services/gdrive-mergerfs.service /etc/services.d
 
 # copy entrypoint to run when the container starts
 ADD ./10-prepare-rclone.sh /etc/cont-init.d/10-prepare-rclone.sh
-RUN set -ex; \
-    chmod +x /entrypoint.sh
+# RUN set -ex; \
+#     chmod +x /entrypoint.sh
 
 VOLUME /remote
 VOLUME /local-cache
