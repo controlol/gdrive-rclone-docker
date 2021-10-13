@@ -66,13 +66,13 @@ sed -i "s,<gdrive-rclone>,$rclone_remote,g" run finish
 
 # create mountable folders 
 # the merged fs - local cache for gdrive - new local only files
-mkdir -p /gdrive/remote /gdrive/cache /gdrive/local
+mkdir -p /remote /local/cache /local/gdrive
 
 # create cronjob task
 echo "Creating cron task"
 mkdir /etc/crontabs
-echo "0 */6 * * * /usr/bin/rclone move /gdrive/local $rclone_remote: --config /config/rclone.conf --log-file /var/log/rclone/upload.log --log-level INFO --delete-empty-src-dirs --fast-list --min-age 6h" > /etc/crontabs/root
+echo "0 */6 * * * /usr/bin/rclone move /local/gdrive $rclone_remote: --config /config/rclone.conf --log-file /var/log/rclone/upload.log --log-level INFO --delete-empty-src-dirs --fast-list --min-age 6h" > /etc/crontabs/root
 crontab /etc/crontabs/root
 
 echo "Mounting mergerfs"
-/usr/bin/mergerfs /gdrive/local:/gdrive-cloud /gdrive/remote -o rw,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=auto-full,nonempty
+/usr/bin/mergerfs /local/gdrive:/gdrive-cloud /remote -o rw,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=auto-full,nonempty

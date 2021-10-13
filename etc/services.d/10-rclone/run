@@ -13,7 +13,7 @@ set -x
   --timeout=1h \
   --poll-interval=15s \
   --dir-cache-time=1000h \
-  --cache-dir=/gdrive/cache \
+  --cache-dir=/local/cache \
   --vfs-cache-mode=full \
   --vfs-cache-max-size=<cache-size> \
   --vfs-cache-max-age=<cache-time> \

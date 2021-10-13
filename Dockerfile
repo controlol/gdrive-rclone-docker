@@ -9,8 +9,7 @@ RUN set -ex; \
         curl \
         ca-certificates \
         unzip \
-        mergerfs; \
-    apt install -y \
+        mergerfs \
         cron; \
     rm -rf /var/lib/apt/lists/*
 
@@ -39,25 +38,20 @@ RUN set -ex; \
     # mount point for gdrive
     /gdrive-cloud
 
-# # required ENV
 # ENV PASSWORD
 # ENV PASSWORD_HASH
-# # folders seperated by a space
 # ENV RCLONE_FOLDER
-# # remote from the config file
 # ENV RCLONE_REMOTE
-# # cache variables
 # ENV LOCAL_CACHE_SIZE
 # ENV LOCAL_CACHE_TIME
 
 # s6 files
 ADD ./etc /etc
 
-VOLUME /gdrive
-
-# VOLUME /remote
-# VOLUME /local-cache
-# VOLUME /gdrive-local
+# merged local and remote folder, should be mounted as a shared folder
+VOLUME /remote
+# local cache and files
+VOLUME /local
 
 # config volume, should contain the RCLONE config file with gdrive remote named gdrive-rclone.conf
 VOLUME /config
