@@ -3,35 +3,8 @@ set -eu
 
 rclone_remote="$RCLONE_REMOTE-crypt-$RCLONE_FOLDER"
 
-
 if [ ! -f "/config/rclone.conf" ]; then
   echo "Creating rclone config file"
-
-  # # check if environment variables are set
-  # if [ -z "${PASSWORD}" ]; then
-  #   echo "Please set PASSWORD environment"
-  #   exit 1
-  # fi
-  # if [ -z "${PASSWORD2}" ]; then
-  #   echo "Please set PASSWORD2 environment"
-  #   exit 1
-  # fi
-  # if [ -z "${RCLONE_FOLDER}" ]; then
-  #   echo "Please set RCLONE_FOLDER environment"
-  #   exit 1
-  # fi
-  # if [ -z "${RCLONE_REMOTE}" ]; then
-  #   echo "Please set RCLONE_REMOTE environment"
-  #   exit 1
-  # fi
-  # if [ -z "${LOCAL_CACHE_SIZE}" ]; then
-  #   echo "Please set LOCAL_CACHE_SIZE environment"
-  #   exit 1
-  # fi
-  # if [ -z "${LOCAL_CACHE_TIME}" ]; then
-  #   echo "Please set LOCAL_CACHE_TIME environment"
-  #   exit 1
-  # fi
 
   # chekc if base config file exists
   if [ ! -f "/config/gdrive-rclone.conf" ]; then
@@ -54,6 +27,9 @@ if [ ! -f "/config/rclone.conf" ]; then
   # done
 
 fi
+
+unset PASSWORD
+unset PASSWORD2
 
 echo "Creating rclone service"
 
