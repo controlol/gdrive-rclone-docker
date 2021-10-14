@@ -46,6 +46,8 @@ RUN set -ex; \
 # ENV LOCAL_CACHE_SIZE
 # ENV LOCAL_CACHE_TIME
 
+ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
+
 # s6 files
 ADD ./etc /etc
 
