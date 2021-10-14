@@ -2,6 +2,8 @@ FROM ubuntu
 
 WORKDIR /
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 # install prerequisites
 RUN set -ex; \
     apt update; \
