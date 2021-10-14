@@ -42,7 +42,9 @@ sed -i "s,<gdrive-rclone>,$rclone_remote,g" run finish
 
 # create mountable folders 
 # the merged fs - local cache for gdrive - new local only files
-mkdir -p /remote /local/cache /local/gdrive
+mkdir -p /remote /local/{cache,gdrive} /config/log
+
+ln -s /config/log /var/log/rclone
 
 # create cronjob task
 echo "Creating cron task"
