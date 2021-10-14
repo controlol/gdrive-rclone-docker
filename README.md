@@ -2,7 +2,9 @@
 
 ## Introduction
 
-This Docker image can be used to connect to your Google Drive folder. All files will appear as if they are locally on your system and you can browse like you normally would.
+This Docker image is used to mount to your Google Drive folder to a local folder. All files will appear as if they are locally on your system and you can browse like you normally would. Added files will at first be stored locally and pushed to Google Drive once per 6 hours. This will allow quick access to newly created files. Secondly there is a configurable cache pool to further improve the experience.
+
+If you want to use the Google Drive space on your local network you can share the mounted folder as a SMB or NFS share.
 
 ## Usage
 This image will require some special flags to function properly, this is because you will be mounting mergefs (fuse) to a shared docker volume. Add the following flags to you docker cli `--cap-add SYS_ADMIN --device /dev/fuse`.
