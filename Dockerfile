@@ -10,7 +10,8 @@ RUN set -ex; \
         ca-certificates \
         unzip \
         mergerfs \
-        cron; \
+        cron \
+        tzdata; \
     rm -rf /var/lib/apt/lists/*
 
 # install s6-overlay
