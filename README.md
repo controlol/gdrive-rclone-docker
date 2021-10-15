@@ -88,6 +88,7 @@ docker run -d \
 | PASSWORD2 | The password salt to encrypt your files | 64-128 char |
 | LOCAL_CACHE_SIZE | The maximum size of cache | 250G |
 | LOCAL_CACHE_TIME | How long cache should be kept | 12h |
+| TZ | The timezone of the container | Europe/Amsterdam |
 
 ### Notes
 It is recommended to use a random string for PASSWORD and PASSWORD2 between 64 and 128 characters, they should not be the same string. 
