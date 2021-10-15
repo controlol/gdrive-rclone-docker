@@ -44,7 +44,8 @@ sed -i "s,<gdrive-rclone>,$rclone_remote,g" run finish
 # the merged fs - local cache for gdrive - new local only files
 mkdir -p /remote /local/{cache,gdrive} /config/log
 
-ln -s /config/log /var/log/rclone
+# logs for rclone
+ln -sf /config/log /var/log/rclone
 
 # create cronjob task
 echo "Creating cron task"

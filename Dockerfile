@@ -33,13 +33,9 @@ RUN set -ex; \
     mkdir -p /root/.config/rclone; \
     ln -s /root/.config/rclone /config
 
+# mount point for gdrive
 RUN set -ex; \
-    mkdir \
-    # logs for rclone
-    /var/log/rclone \
-    /gdrive \
-    # mount point for gdrive
-    /gdrive-cloud
+    mkdir /gdrive-cloud
 
 # ENV PASSWORD
 # ENV PASSWORD_HASH
