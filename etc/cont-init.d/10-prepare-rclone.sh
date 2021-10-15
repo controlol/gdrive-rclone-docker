@@ -12,28 +12,42 @@ if [ ! -f "/config/rclone.conf" ]; then
     exit 1
   fi
 
+  # copy the base config
   cp /config/gdrive-rclone.conf /config/rclone.conf
 
+  echo "Creating remote config $rclone_remote"
+
+  # create obscure passwords
   pwobscure=$(/usr/bin/rclone obscure "$PASSWORD")
   pwobscurehash=$(/usr/bin/rclone obscure "$PASSWORD2")
 
-  # IFS=' ' read -r -a array <<< "$RCLONE_FOLDER"
+  remote="$RCLONE_REMOTE:/$RCLONE_FOLDER"
 
-  # for folder in "${array[@]}"
-  # do
-    remote="$RCLONE_REMOTE:/$RCLONE_FOLDER"
+  # create the config
+  /usr/bin/rclone config create "$rclone_remote" crypt remote="$remote" password="$pwobscure" password2="$pwobscurehash"
+elif [[ -z $(cat /config/rclone.conf | grep "$rclone_remote") ]]
+  # remote does not exist but rclone.conf does exist, create new remote
+  echo "Creating remote config $rclone_remote"
 
-    /usr/bin/rclone config create "$rclone_remote" crypt remote="$remote" password="$pwobscure" password2="$pwobscurehash"
-  # done
+  # create obscure passwords
+  pwobscure=$(/usr/bin/rclone obscure "$PASSWORD")
+  pwobscurehash=$(/usr/bin/rclone obscure "$PASSWORD2")
 
+  remote="$RCLONE_REMOTE:/$RCLONE_FOLDER"
+
+  # create the config
+  /usr/bin/rclone config create "$rclone_remote" crypt remote="$remote" password="$pwobscure" password2="$pwobscurehash"
 fi
 
+# most of this only needs to be done on first container start. This should be detected by touching a file
+
+# remove password from env
 unset PASSWORD
 unset PASSWORD2
 
-echo "Creating rclone service"
-
 # create gdrive-rclone service
+echo "Creating rclone service file"
+
 cd /etc/services.d/rclone || exit 1
 
 sed -i "s,<cache-size>,$LOCAL_CACHE_SIZE,g" run finish
