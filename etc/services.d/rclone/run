@@ -6,7 +6,7 @@ set -x
   --log-level=INFO \
   --log-file=/var/log/rclone/mount.log \
   --user-agent=rclonemediadrive \
-  --umask=002 \
+  --umask=022 \
   --gid=100 \
   --uid=1001 \
   --allow-other \
