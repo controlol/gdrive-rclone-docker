@@ -61,7 +61,7 @@ if [ ! -f /setupcontainer ]; then
 
   echo "Creating cron task"
   mkdir -p /etc/crontabs
-  echo "0 */6 * * * /usr/bin/rclone move /local/gdrive $rclone_remote: --config /config/rclone.conf --log-file /var/log/rclone/upload.log --log-level INFO --delete-empty-src-dirs --fast-list --min-age 6h" > /etc/crontabs/root
+  echo "0 */6 * * * /usr/bin/rclone move /local/gdrive $rclone_remote: --config /config/rclone.conf --log-file /var/log/rclone/upload.log --log-level INFO --delete-empty-src-dirs --drive-stop-on-upload-limit --fast-list --min-age 6h" > /etc/crontabs/root
   crontab /etc/crontabs/root
 
   # so we know the container has already been setup
