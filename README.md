@@ -14,7 +14,7 @@ To Use Rclone with Google Drive you will need to allow access to your Google Dri
 #### Prerequisites
 You will need to have rclone installed on your machine or in a temporary docker container. Obtain a Google Drive API client id and secret following [this guide from Rclone](https://rclone.org/drive/#making-your-own-client-id). Somewhere in your drive you will need to create a root folder for you Rclone files to live. I would suggest calling it rclone. The RCLONE_FOLDER will live inside this folder. Open the folder in Google Drive and copy the folder id.
 
-![Copy folder id](/readme/folder_id.jpg "Copy folder id")
+<img src="./readme/folder_id.jpg" alt="Copy folder id" width="700"/>
 
 #### Create base rclone configuration
 
@@ -72,11 +72,22 @@ docker run -d \
 
 ### Volumes
 
-| Container | Description | Type |
+| Container path | Description | Type |
 | ---  | --- | --- |
 | /config | Contains the rclone configuration files | normal |
-| /local  | This is where the local files and cache is stored | normal |
-| /remote | Here the drive share is mounted | shared |
+| /local  | Contains the local and cache files | normal |
+| /remote | Use this folder to view and upload files | shared |
+
+Make sure you have created the rclone base configuration and copied it to /config/gdrive-rclone.conf.<br/>
+The /local directory has two folders, gdrive and cache. The cache folder has temporarily downloaded files from gdrive, and will not grow beyond LOCAL_CACHE_SIZE. The gdrive folder is temporary storage for files that still have to be uploaded to Google Drive.
+
+#### File uploads
+Every six hours files will be moved to Google Drive, a file is only considered if it is older than 6 hours
+| File Age | Result |
+| --- | --- |
+| 0H < Created < 6H | Not uploaded |
+| 6H < Created < 12H | Uploaded |
+| 12H < Created | Upload limit reached or upload speed too slow<br> Upload will be retried during the next run |
 
 ### Environment
 
@@ -92,5 +103,7 @@ docker run -d \
 | TZ | The timezone of the container | Europe/Amsterdam |
 
 ### Notes
-It is recommended to use a random string for PASSWORD and PASSWORD2 between 64 and 128 characters, they should not be the same string. 
-Your LOCAL_CACHE_SIZE should be at least as the size as the largest file you expect to upload.
+It is recommended to use a random string for PASSWORD and PASSWORD2 between 64 and 128 characters, they should not be the same string.<br/>
+Your LOCAL_CACHE_SIZE should be at least as the size as the largest file you expect to upload.<br/>
+A move job will not run for longer than 6h to prevent multiple jobs running at once.<br/>
+The maximum upload limit is 750GB per day.
