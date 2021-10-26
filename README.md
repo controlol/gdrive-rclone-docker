@@ -88,6 +88,7 @@ docker run -d \
 | PASSWORD2 | The password salt to encrypt your files | 64-128 char |
 | LOCAL_CACHE_SIZE | The maximum size of cache | 250G |
 | LOCAL_CACHE_TIME | How long cache should be kept | 12h |
+| NO_CRYPT | Files are not encrypted if this variable is not empty | "yes" or "" |
 | TZ | The timezone of the container | Europe/Amsterdam |
 
 ### Notes
