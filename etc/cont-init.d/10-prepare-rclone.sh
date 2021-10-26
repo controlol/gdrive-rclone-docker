@@ -39,6 +39,7 @@ if [ -z "$NO_CRYPT" ]; then
   fi
 else
   # use unencrypted folder inside the base folder
+  echo "Uploaded files will not be encrypted!"
   rclone_remote="$RCLONE_REMOTE:/$RCLONE_FOLDER"
 fi
 
