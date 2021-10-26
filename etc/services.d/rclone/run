@@ -17,4 +17,4 @@ set -x
   --vfs-cache-mode=full \
   --vfs-cache-max-size=<cache-size> \
   --vfs-cache-max-age=<cache-time> \
-  <gdrive-rclone>: /gdrive-cloud
+  <gdrive-rclone> /gdrive-cloud
