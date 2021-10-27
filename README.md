@@ -90,7 +90,6 @@ Every six hours files will be moved to Google Drive, a file is only considered i
 | 12H < Created | Upload limit reached or upload speed too slow<br> Upload will be retried during the next run |
 
 ### Environment
-
 | Paramater | Function | Example |
 | --- | --- | --- |
 | RCLONE_FOLDER | The name of the remote subfolder you want to use | media |
@@ -100,7 +99,13 @@ Every six hours files will be moved to Google Drive, a file is only considered i
 | LOCAL_CACHE_SIZE | The maximum size of cache | 250G |
 | LOCAL_CACHE_TIME | How long cache should be kept | 12h |
 | NO_CRYPT | Files are not encrypted if this variable is not empty | "yes" or "" |
+| RCLONE_WEB_USER | The username for the weblogin | gui |
+| RCLONE_WEB_PASS | The password for the weblogin | password |
 | TZ | The timezone of the container | Europe/Amsterdam |
+
+### WebUI
+This version of the image includes the [rclone-webui-react](https://github.com/rclone/rclone-webui-react), which is a beautiful API to interact with the rclone installation. Not only can you view and edit settings but it also shows stats like rclone uptime and data transferred. For more information and screenshots look at the repo on github.<br/>
+This version of the image may allow to disregard the [prerequisites step](#prerequisites)
 
 ### Notes
 It is recommended to use a random string for PASSWORD and PASSWORD2 between 64 and 128 characters, they should not be the same string.<br/>
