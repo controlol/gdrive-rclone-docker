@@ -10,7 +10,7 @@ RUN set -ex; \
         curl \
         ca-certificates \
         git \
-        npm
+        npm; \
     rm -rf /var/lib/apt/lists/*
 
 RUN set -ex; \
