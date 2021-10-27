@@ -54,9 +54,9 @@ if [ ! -f /setupcontainer ]; then
     rclone_remote="$rclone_remote:"
   fi
 
-  $upload_command="move"
+  upload_command="move"
   if [ ! -z "$USE_COPY" ]; then
-    $upload_command="copy"
+    upload_command="copy"
   fi
 
   # create folders
