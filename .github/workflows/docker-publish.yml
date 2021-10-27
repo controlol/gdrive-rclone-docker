@@ -7,7 +7,7 @@ name: Docker
 
 on:
   push:
-    branches: [ master ]
+    branches: [ gui ]
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -46,8 +46,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           flavor: |
-            latest=true
-            prefix=
+            latest=false
+            prefix=gui
             suffix=
 
       # Build and push Docker image with Buildx (don't push on PR)
