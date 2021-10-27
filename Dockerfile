@@ -17,7 +17,7 @@ RUN set -ex; \
     curl https://raw.githubusercontent.com/rclone/rclone-webui-react/master/webui.sh > webui.sh; \
     chmod +x /webui.sh; \
     # remove password checks
-    sed -e '3,5d;18,36d' /webui.sh; \
+    sed -ie '3,5d;18,36d' /webui.sh; \
     /webui.sh get; \
     /webui.sh build
 
