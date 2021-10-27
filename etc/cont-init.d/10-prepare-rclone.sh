@@ -1,5 +1,5 @@
 #!/usr/bin/with-contenv bash
-set -eu
+set -e
 
 # copy gdrive-rclone.conf and check if the $RCLONE_REMOTE config exists
 if [ ! -f "/config/rclone.conf" ]; then
