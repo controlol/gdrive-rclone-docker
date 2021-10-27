@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv bash
+set -x
+
+/usr/bin/rclone rcd --rc-web-gui-no-open-browser --rc-addr :80 --rc-user "$RCLONE_WEB_USER" --rc-pass "$RCLONE_WEB_PASS" /webui
