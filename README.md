@@ -100,10 +100,12 @@ Every six hours files will be moved to Google Drive, a file is only considered i
 | LOCAL_CACHE_SIZE | The maximum size of cache | 250G |
 | LOCAL_CACHE_TIME | How long cache should be kept | 12h |
 | NO_CRYPT | Files are not encrypted if this variable is not empty | "yes" or "" |
+| USE_COPY | Files are copied if this variable is not empty | "yes" or "" |
 | TZ | The timezone of the container | Europe/Amsterdam |
 
 ### Notes
 It is recommended to use a random string for PASSWORD and PASSWORD2 between 64 and 128 characters, they should not be the same string.<br/>
 Your LOCAL_CACHE_SIZE should be at least as the size as the largest file you expect to upload.<br/>
+Setting USE_COPY will allow you to keep the files locally, they will still be uploaded on the same schedule.<br/>
 A move job will not run for longer than 6h to prevent multiple jobs running at once.<br/>
 The maximum upload limit is 750GB per day.

@@ -54,6 +54,11 @@ if [ ! -f /setupcontainer ]; then
     rclone_remote="$rclone_remote:"
   fi
 
+  $upload_command="move"
+  if [ ! -z "$USE_COPY" ]; then
+    $upload_command="copy"
+  fi
+
   # create folders
   # the merged fs - local cache for gdrive - new local only files
   mkdir -p /local/{cache,gdrive} /config/log
@@ -72,7 +77,7 @@ if [ ! -f /setupcontainer ]; then
   echo "Creating cron task"
   mkdir -p /etc/crontabs
 
-  echo "0 */6 * * * /usr/bin/rclone move /local/gdrive $rclone_remote --config /config/rclone.conf --log-file /var/log/rclone/upload.log --log-level INFO --delete-empty-src-dirs --drive-stop-on-upload-limit --fast-list --min-age 6h --max-duration 6h" > /etc/crontabs/root
+  echo "0 */6 * * * /usr/bin/rclone $upload_command /local/gdrive $rclone_remote --config /config/rclone.conf --log-file /var/log/rclone/upload.log --log-level INFO --delete-empty-src-dirs --drive-stop-on-upload-limit --fast-list --min-age 6h --max-duration 6h" > /etc/crontabs/root
 
   crontab /etc/crontabs/root
 
