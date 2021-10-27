@@ -62,6 +62,8 @@ docker run -d \
   -e RCLONE_REMOTE=yourremote \
   -e LOCAL_CACHE_SIZE=250G \
   -e LOCAL_CACHE_TIME=12h \
+  -e RCLONE_WEB_USER=gui \
+  -e RCLONE_WEB_PASS=password \
   -v /path/to/localstorage:/local \
   -v /path/to/config:/config \
   -v /path/to/remote:/remote:rw,shared \
@@ -107,6 +109,8 @@ Every six hours files will be moved to Google Drive, a file is only considered i
 ### WebUI
 This version of the image includes the [rclone-webui-react](https://github.com/rclone/rclone-webui-react), which is a beautiful API to interact with the rclone installation. Not only can you view and edit settings but it also shows stats like rclone uptime and data transferred. For more information and screenshots look at the repo on github.<br/>
 This version of the image may allow you to disregard the [prerequisites step](#prerequisites) in the future.
+
+The WebUI will be exposed to all interfaces of the container on port 80. You can use the bridge network to bind the port to a different port on the host by adding the argument `-p 5572:80`.
 
 ### Notes
 It is recommended to use a random string for PASSWORD and PASSWORD2 between 64 and 128 characters, they should not be the same string.<br/>
