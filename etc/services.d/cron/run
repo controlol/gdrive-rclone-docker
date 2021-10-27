@@ -1,4 +1,0 @@
-#!/usr/bin/with-contenv bash
-set -x
-
-exec /usr/sbin/cron -f
