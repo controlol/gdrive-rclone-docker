@@ -1,14 +1,16 @@
 #!/usr/bin/with-contenv bash
 
 # these env must be set
-if [ -z "${PASSWORD}" ]; then
-  echo "Please set PASSWORD environment"
-  exit 1
-fi
+if [ ! -z "${NO_CRYPT}" ]; then
+  if [ -z "${PASSWORD}" ]; then
+    echo "Please set PASSWORD environment"
+    exit 1
+  fi
 
-if [ -z "${PASSWORD2}" ]; then
-  echo "Please set PASSWORD2 environment"
-  exit 1
+  if [ -z "${PASSWORD2}" ]; then
+    echo "Please set PASSWORD2 environment"
+    exit 1
+  fi
 fi
 
 if [ -z "${RCLONE_FOLDER}" ]; then
