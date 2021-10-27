@@ -46,8 +46,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           flavor: |
-            latest=false
-            prefix=gui
+            latest=true
+            prefix=
             suffix=
 
       # Build and push Docker image with Buildx (don't push on PR)
