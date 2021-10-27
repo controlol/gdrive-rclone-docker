@@ -6,6 +6,11 @@ This Docker image is used to mount to your Google Drive folder to a local folder
 
 If you want to use the Google Drive space on your local network you can share the mounted folder as a SMB or NFS share.
 
+## Tags
+Base tag: ghcr.io/controlol/gdrive-rclone
+- [**latest**](https://github.com/controlol/gdrive-rclone-docker) Build using the latest changes on this repo
+- [**webui**](https://github.com/controlol/gdrive-rclone-docker/tree/webui) Uses latest tag and adds the webui
+
 ## Usage
 This image will require some special flags to function properly, this is because you will be mounting mergefs (fuse) to a shared docker volume. Add the following flags to you docker cli `--cap-add SYS_ADMIN --device /dev/fuse`.
 
