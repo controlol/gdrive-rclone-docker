@@ -105,7 +105,7 @@ Every six hours files will be moved to Google Drive, a file is only considered i
 
 ### WebUI
 This version of the image includes the [rclone-webui-react](https://github.com/rclone/rclone-webui-react), which is a beautiful API to interact with the rclone installation. Not only can you view and edit settings but it also shows stats like rclone uptime and data transferred. For more information and screenshots look at the repo on github.<br/>
-This version of the image may allow to disregard the [prerequisites step](#prerequisites)
+This version of the image may allow you to disregard the [prerequisites step](#prerequisites) in the future.
 
 ### Notes
 It is recommended to use a random string for PASSWORD and PASSWORD2 between 64 and 128 characters, they should not be the same string.<br/>
