@@ -99,9 +99,9 @@ Every six hours files will be moved to Google Drive, a file is only considered i
 | LOCAL_CACHE_SIZE | The maximum size of cache | 250G |
 | LOCAL_CACHE_TIME | How long cache should be kept | 12h |
 | NO_CRYPT | Files are not encrypted if this variable is not empty | "yes" or "" |
+| USE_COPY | Files are copied if this variable is not empty | "yes" or "" |
 | RCLONE_WEB_USER | The username for the weblogin | gui |
 | RCLONE_WEB_PASS | The password for the weblogin | password |
-| USE_COPY | Files are copied if this variable is not empty | "yes" or "" |
 | TZ | The timezone of the container | Europe/Amsterdam |
 
 ### WebUI
