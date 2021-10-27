@@ -29,6 +29,6 @@ if [ -z "${LOCAL_CACHE_SIZE}" ]; then
 fi
 
 # optional env, default values
-export LOCAL_CACHE_TIME="${$LOCAL_CACHE_SIZE:-12h}"
+export LOCAL_CACHE_TIME="${LOCAL_CACHE_TIME:-12h}"
 
 export TZ="${TZ:-Europe/Amsterdam}"
