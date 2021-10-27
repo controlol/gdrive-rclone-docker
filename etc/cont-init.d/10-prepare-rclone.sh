@@ -14,7 +14,7 @@ if [ ! -f "/config/rclone.conf" ]; then
   # copy the base config
   cp /config/gdrive-rclone.conf /config/rclone.conf
 
-  if ! grep -q "[$RCLONE_REMOTE]" /config/rclone.conf; then
+  if ! grep -q "$RCLONE_REMOTE" /config/rclone.conf; then
     echo "Config $RCLONE_REMOTE does not exist in gdrive-rclone.conf"
     exit 1
   fi
@@ -24,7 +24,7 @@ if [ -z "$NO_CRYPT" ]; then
   # add the encrypted remote
   rclone_remote="$RCLONE_REMOTE-crypt-$RCLONE_FOLDER"
 
-  if ! grep -q "[$rclone_remote]" /config/rclone.conf; then
+  if ! grep -q "$rclone_remote" /config/rclone.conf; then
     # remote does not exist but rclone.conf does exist, create new remote
     echo "Adding remote config $rclone_remote"
 
