@@ -8,6 +8,10 @@ name: Docker
 on:
   push:
     branches: [ master ]
+    paths-ignore:
+      - 'README.md'
+      - 'readme/**'
+      - 'LICENSE'
 
 env:
   # Use docker.io for Docker Hub if empty
