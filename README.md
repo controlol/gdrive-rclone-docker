@@ -1,5 +1,8 @@
 # gdrive-rclone-docker
 
+![CI/CD](https://github.com/controlol/gdrive-rclone-docker/workflows/Docker/badge.svg)
+![GitHub top language](https://img.shields.io/github/languages/top/controlol/gdrive-rclone-docker?color=green)
+
 ## Introduction
 
 This Docker image is used to mount to your Google Drive folder to a local folder. All files will appear as if they are locally on your system and you can browse like you normally would. Added files will at first be stored locally and pushed to Google Drive once per 6 hours. This will allow quick access to newly created files. Secondly there is a configurable cache pool to further improve the experience.
