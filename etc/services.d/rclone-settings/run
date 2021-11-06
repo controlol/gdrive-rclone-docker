@@ -1,0 +1,37 @@
+#!/usr/bin/with-contenv bash
+set -x
+
+s6-svwait -U /etc/services.d/rclone
+
+curl --request POST \
+  --url http://localhost:5572/options/set \
+  --header 'Content-Type: application/json' \
+  --header '<auth-header>' \
+  --data '{
+  "main": {
+    "LogLevel": "INFO",
+    "Progress": true,
+    "MaxDuration": 21600000000000
+  },
+  "filter": {
+    "MinAge": "6h"
+  },
+  "log": {
+    "file": "/var/log/rclone/rc.log"
+  },
+  "vfs": {
+    "DirCacheTime": 360000000000000,
+    "PollInterval": 15000000000,
+    "Umask": 11,
+    "UID": 1001,
+    "GID": 100,
+    "DirPerms": 11,
+    "FilePerms": 11,
+    "CacheMode": "full",
+    "CacheMaxSize": "<cache-size>",
+    "cacheMaxAge": <cache-age>
+  },
+  "mount": {
+    "AllowOther": true
+  }
+}'
