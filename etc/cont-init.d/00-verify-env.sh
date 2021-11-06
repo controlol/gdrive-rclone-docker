@@ -9,7 +9,7 @@ for folder in "${folder_arr[@]}"; do
   read -a values <<< "$folder"
   no_crypt = ${values[1]}
   if [ -z $no_crypt ]; then
-    no_crypt = "crypt"
+    no_crypt="crypt"
   fi
 
   if [ "${no_crypt}" == "crypt" ]; then
