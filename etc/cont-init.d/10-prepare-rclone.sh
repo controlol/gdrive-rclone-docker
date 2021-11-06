@@ -125,6 +125,9 @@ if [ ! -f /setupcontainer ]; then
   sed -i "s,<cache-size>,$LOCAL_CACHE_SIZE,g" run
   sed -i "s,<cache-age>,$cache_age,g" run
 
+  # temporary fix to keep script from restarting everytime
+  echo "sleep infinity" >> run
+
   # remove password from env
   unset PASSWORD
   unset PASSWORD2
