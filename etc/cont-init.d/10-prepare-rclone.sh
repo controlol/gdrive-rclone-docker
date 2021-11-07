@@ -24,6 +24,11 @@ fi
 IFS=';'
 read -a folder_arr <<< $RCLONE_FOLDERS
 
+# create local remote
+if ! grep -q "localdisk" /config/rclone.conf; then
+  /usr/bin/rclone config create localdisk local
+fi
+
 # set IFS for read command
 IFS=','
 # cd to rc settings folder to run sed on the run file
