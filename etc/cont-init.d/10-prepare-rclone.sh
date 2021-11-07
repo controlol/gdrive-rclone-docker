@@ -128,14 +128,14 @@ if [ ! -f /setupcontainer ]; then
   cd /etc/services.d/rclone-settings || exit 1
 
   cache_age=$(( 24 * 60 * 60 * 1000000000 ))
-  if [ ${LOCAL_CACHE_TIME: -1} == 's' ]; then
-    cache_age=$((${LOCAL_CACHE_TIME::-1} * 1000000000))
-  elif [ ${LOCAL_CACHE_TIME: -1} == 'm' ]; then
-    cache_age=$((${LOCAL_CACHE_TIME::-1} * 60 * 1000000000))
-  elif [ ${LOCAL_CACHE_TIME: -1} == 'H' ]; then
-    cache_age=$((${LOCAL_CACHE_TIME::-1} * 60 * 60 * 1000000000))
-  elif [ ${LOCAL_CACHE_TIME: -1} == 'd' ]; then
-    cache_age=$((${LOCAL_CACHE_TIME::-1} * 24 * 60 * 60 * 1000000000))
+  if [ ${CACHE_MAX_AGE: -1} == 's' ]; then
+    cache_age=$((${CACHE_MAX_AGE::-1} * 1000000000))
+  elif [ ${CACHE_MAX_AGE: -1} == 'm' ]; then
+    cache_age=$((${CACHE_MAX_AGE::-1} * 60 * 1000000000))
+  elif [ ${CACHE_MAX_AGE: -1} == 'H' ]; then
+    cache_age=$((${CACHE_MAX_AGE::-1} * 60 * 60 * 1000000000))
+  elif [ ${CACHE_MAX_AGE: -1} == 'd' ]; then
+    cache_age=$((${CACHE_MAX_AGE::-1} * 24 * 60 * 60 * 1000000000))
   fi
 
   auth_header=""
@@ -146,7 +146,7 @@ if [ ! -f /setupcontainer ]; then
     auth_header="${auth_header::-2}=="
   fi
 
-  sed -i "s,<cache-size>,$LOCAL_CACHE_SIZE,g" run
+  sed -i "s,<cache-size>,$CACHE_MAX_SIZE,g" run
   sed -i "s,<cache-age>,$cache_age,g" run
   sed -i "s,<auth-header>,$auth_header,g" run
   sed -i "s,<user-id>,$PUID,g" run
@@ -158,6 +158,7 @@ if [ ! -f /setupcontainer ]; then
   # remove password from env
   unset PASSWORD
   unset PASSWORD2
+  unset RC_WEB_PASS
 
   touch /setupcontainer
 fi

@@ -36,8 +36,8 @@ if [ -z "${RCLONE_REMOTE}" ]; then
   exit 1
 fi
 
-if [ -z "${LOCAL_CACHE_SIZE}" ]; then
-  echo "Please set LOCAL_CACHE_SIZE environment"
+if [ -z "${CACHE_MAX_SIZE}" ]; then
+  echo "Please set CACHE_MAX_SIZE environment"
   exit 1
 fi
 
@@ -58,7 +58,7 @@ printf "${PUID:-100}" > /var/run/s6/container_environment/PUID
 printf "${PGID:-100}" > /var/run/s6/container_environment/PGID
 
 # optional env, default values
-printf "${LOCAL_CACHE_TIME:-12h}" > /var/run/s6/container_environment/LOCAL_CACHE_TIME
+printf "${CACHE_MAX_AGE:-12h}" > /var/run/s6/container_environment/CACHE_MAX_AGE
 
 printf "${TZ:-Europe/Amsterdam}" > /var/run/s6/container_environment/TZ
 
