@@ -1,5 +1,5 @@
 #!/usr/bin/with-contenv bash
 
-set -eu
+set -e
 
-chown -r "$UID":"$GID" /config/*
+chown -R "$PUID":"$PGID" /config/*
