@@ -71,7 +71,10 @@ for folder in "${folder_arr[@]}"; do
   if [ ! -f /setupcontainer ]; then
     # create folders
     # the merged fs - local cache for gdrive - new local only files
-    mkdir -p /local/{cache,gdrive}/"$rclone_folder" /remote/"$rclone_folder" /config/log
+    mkdir -p \
+      /local/{cache,gdrive}/"$rclone_folder" \
+      /remote/"$rclone_folder" \
+      /gdrive-cloud/"$rclone_folder"
 
     echo "[$rclone_folder] Creating cron task"
     mkdir -p /etc/crontabs
@@ -80,15 +83,16 @@ for folder in "${folder_arr[@]}"; do
     # add mount command
     echo "[$rclone_folder] Adding mount command"
     {
-      echo "curl --request POST",
-      echo "  --url http://localhost:5572/mount/mount",
-      echo "  --header 'Content-Type: application/json'",
-      echo "  --header '<auth-header>'",
-      echo "  --data \'{",
-      echo "  \"fs\": \"$rclone_remote\",",
-      echo "  \"mountPoint\": \"/gdrive-cloud/$rclone_folder\",",
-      echo "  \"mountType\": \"mount\"",
+      echo "curl --request POST \\"
+      echo "  --url http://localhost:5572/mount/mount \\"
+      echo "  --header 'Content-Type: application/json' \\"
+      echo "  --header '<auth-header>' \\"
+      echo "  --data '{"
+      echo "  \"fs\": \"$rclone_remote\","
+      echo "  \"mountPoint\": \"/gdrive-cloud/$rclone_folder\","
+      echo "  \"mountType\": \"mount\""
       echo "}'"
+      echo ""
     } >> run
 
     echo "[$rclone_folder] Mounting mergerfs $rclone_remote"
@@ -99,6 +103,7 @@ done
 # so we know the container has already been setup
 if [ ! -f /setupcontainer ]; then
   # link logs for rclone
+  mkdir -p /config/log
   ln -sf /config/log /var/log/rclone
 
   crontab /etc/crontabs/root
@@ -126,8 +131,17 @@ if [ ! -f /setupcontainer ]; then
     cache_age=$((${LOCAL_CACHE_TIME::-1} * 24 * 60 * 60 * 1000000000))
   fi
 
+  auth_header=""
+  if [ ! -z $ENABLE_WEB ]; then
+    auth_data="$RC_WEB_USER:$RC_WEB_PASS"
+    auth_header="Authorization: Basic $(echo "$auth_data" | base64)"
+    # for some reason base64 ends with o= instead of ==, fix that
+    auth_header="${auth_header::-2}=="
+  fi
+
   sed -i "s,<cache-size>,$LOCAL_CACHE_SIZE,g" run
   sed -i "s,<cache-age>,$cache_age,g" run
+  sed -i "s,<auth-header>,$auth_header,g" run
 
   # temporary fix to keep script from restarting everytime
   echo "sleep infinity" >> run
@@ -135,7 +149,6 @@ if [ ! -f /setupcontainer ]; then
   # remove password from env
   unset PASSWORD
   unset PASSWORD2
-
 
   touch /setupcontainer
 fi

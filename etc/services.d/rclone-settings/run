@@ -1,7 +1,14 @@
 #!/usr/bin/with-contenv bash
-set -x
 
-s6-svwait -U /etc/services.d/rclone
+s6-svwait -u /var/run/s6/services/rclone
+
+http_status=$(curl --request POST --url http://localhost:5572/rc/noop --header '<auth-header>' --header 'Content-Type: application/json' --data '{}' -s -o /dev/null -w "%{http_code}")
+while [[ "$http_status" != "200" ]]; do
+  sleep 1
+  http_status=$(curl --request POST --url http://localhost:5572/rc/noop --header '<auth-header>' --header 'Content-Type: application/json' --data '{}' -s -o /dev/null -w "%{http_code}")
+done
+
+set -x
 
 curl --request POST \
   --url http://localhost:5572/options/set \
@@ -35,3 +42,4 @@ curl --request POST \
     "AllowOther": true
   }
 }'
+
