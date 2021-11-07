@@ -40,7 +40,7 @@ for folder in "${folder_arr[@]}"; do
   no_crypt=${values[1]}
   upload_command=${values[2]}
   if [ -z "$no_crypt" ]; then
-    no_crypt="crypt"
+    no_crypt="nocrypt"
   fi
   if [ -z "$upload_command" ]; then
     upload_command="move"
@@ -63,7 +63,7 @@ for folder in "${folder_arr[@]}"; do
       # create the config
       /usr/bin/rclone config create "$rclone_remote" crypt remote="$remote" password="$pwobscure" password2="$pwobscurehash"
 
-      # add colon to reclone_remote if type is crypt
+      # add colon to rclone_remote if type is crypt
       # if this is not done files are copied to local disk and not to the remote
       rclone_remote="$rclone_remote:"
     fi
@@ -80,6 +80,9 @@ for folder in "${folder_arr[@]}"; do
       /local/{cache,gdrive}/"$rclone_folder" \
       /remote/"$rclone_folder" \
       /gdrive-cloud/"$rclone_folder"
+
+    # create the remote folder in google drive
+    /usr/bin/rclone mkdir "$RCLONE_REMOTE:/$rclone_folder"
 
     echo "[$rclone_folder] Creating cron task"
     mkdir -p /etc/crontabs
@@ -161,4 +164,10 @@ if [ ! -f /setupcontainer ]; then
   unset RC_WEB_PASS
 
   touch /setupcontainer
+fi
+
+# exclude partial files by default
+# more excluded rules can be added on new lines
+if [ ! -f /config/exclude_upload.txt ]; then
+  echo "*partial~" > /config/exclude_upload.txt
 fi
