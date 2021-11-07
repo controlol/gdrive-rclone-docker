@@ -12,11 +12,6 @@ This Docker image is used to mount to your Google Drive folder to a local folder
 
 If you want to use the Google Drive space on your local network you can share the mounted folder as a SMB or NFS share.
 
-## Tags
-Base tag: ghcr.io/controlol/gdrive-rclone
-- [**latest**](https://github.com/controlol/gdrive-rclone-docker) Build using the latest changes on this repo
-- [**webui**](https://github.com/controlol/gdrive-rclone-docker/tree/webui) Uses latest tag and adds the webui
-
 ## Usage
 This image will require some special flags to function properly, this is because you will be mounting mergefs (fuse) to a shared docker volume. Add the following flags to you docker cli `--cap-add SYS_ADMIN --device /dev/fuse`.
 
@@ -25,7 +20,7 @@ To Use Rclone with Google Drive you will need to allow access to your Google Dri
 #### Prerequisites
 You will need to have rclone installed on your machine or in a temporary docker container. Obtain a Google Drive API client id and secret following [this guide from Rclone](https://rclone.org/drive/#making-your-own-client-id). Somewhere in your drive you will need to create a root folder for you Rclone files to live. I would suggest calling it rclone. The RCLONE_FOLDER will live inside this folder. Open the folder in Google Drive and copy the folder id.
 
-<img src="./readme/folder_id.jpg" alt="Copy folder id" width="700"/>
+<img src="https://github.com/controlol/gdrive-rclone-docker/raw/master/readme/folder_id.jpg" alt="Copy folder id" width="700"/>
 
 #### Create base rclone configuration
 
