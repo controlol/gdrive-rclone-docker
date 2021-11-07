@@ -20,13 +20,17 @@ if [ ! -f "/config/rclone.conf" ]; then
   fi
 fi
 
+# split remote folders with ';'
 IFS=';'
-read -ar folder_arr <<< "$RCLONE_FOLDERS"
+read -a folder_arr <<< $RCLONE_FOLDERS
 
+# set IFS for read command
 IFS=','
+# cd to rc settings folder to run sed on the run file
+cd /etc/services.d/rclone-settings || exit 1
 
 for folder in "${folder_arr[@]}"; do
-  read -ar values <<< "$folder"
+  read -a values <<< $folder
   rclone_folder=${values[0]}
   no_crypt=${values[1]}
   upload_command=${values[2]}
@@ -67,7 +71,7 @@ for folder in "${folder_arr[@]}"; do
   if [ ! -f /setupcontainer ]; then
     # create folders
     # the merged fs - local cache for gdrive - new local only files
-    mkdir -p /local/{cache,gdrive}/"$rclone_folder" /config/log
+    mkdir -p /local/{cache,gdrive}/"$rclone_folder" /remote/"$rclone_folder" /config/log
 
     echo "[$rclone_folder] Creating cron task"
     mkdir -p /etc/crontabs
@@ -103,9 +107,9 @@ if [ ! -f /setupcontainer ]; then
   echo "Filling rclone service file"
   cd /etc/services.d/rclone || exit 1
 
-  sed -i "s,<cache-size>,$LOCAL_CACHE_SIZE,g" run
-  sed -i "s,<cache-time>,$LOCAL_CACHE_TIME,g" run
-  sed -i "s,<gdrive-rclone>,$rclone_remote,g" run
+  sed -i "s,<rc-user>,$RC_WEB_USER,g" run
+  sed -i "s,<rc-pass>,$RC_WEB_PASS,g" run
+  sed -i "s,<rc-web-url>,$RC_WEB_URL,g" run
 
   # fill mount service
   echo "[$rclone_folder] Filling rclone settings file"
