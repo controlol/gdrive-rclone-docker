@@ -7,7 +7,7 @@ IFS=','
 
 for folder in "${folder_arr[@]}"; do
   read -a values <<< "$folder"
-  no_crypt = ${values[1]}
+  no_crypt=${values[1]}
   if [ -z $no_crypt ]; then
     no_crypt="crypt"
   fi
@@ -26,7 +26,7 @@ for folder in "${folder_arr[@]}"; do
 done
 
 # these env must be set
-if [ -z "${RCLONE_FOLDER}" ]; then
+if [ -z "${RCLONE_FOLDERS}" ]; then
   echo "Please set RCLONE_FOLDER environment"
   exit 1
 fi
@@ -54,13 +54,13 @@ if [ ! -z "${ENABLE_WEB}" ]; then
 fi
 
 # add default gid and uid env
-export UID="${UID:-100}"
-export GID="${GID:-100}"
+printf "${PUID:-100}" > /var/run/s6/container_environment/PUID
+printf "${PGID:-100}" > /var/run/s6/container_environment/PGID
 
 # optional env, default values
-export LOCAL_CACHE_TIME="${LOCAL_CACHE_TIME:-12h}"
+printf "${LOCAL_CACHE_TIME:-12h}" > /var/run/s6/container_environment/LOCAL_CACHE_TIME
 
-export TZ="${TZ:-Europe/Amsterdam}"
+printf "${TZ:-Europe/Amsterdam}" > /var/run/s6/container_environment/TZ
 
 # default webgui repo
-export RC_WEB_URL="${RC_WEB_URL:-https://api.github.com/repos/controlol/rclone-webui/releases/latest}"
+printf "${RC_WEB_URL:-https://api.github.com/repos/controlol/rclone-webui/releases/latest}" > /var/run/s6/container_environment/RC_WEB_URL
