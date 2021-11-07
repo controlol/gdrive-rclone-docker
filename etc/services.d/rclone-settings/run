@@ -2,15 +2,17 @@
 
 s6-svwait -u /var/run/s6/services/rclone
 
+# wait for the rcd servive to be online
 http_status=$(curl --request POST --url http://localhost:5572/rc/noop --header '<auth-header>' --header 'Content-Type: application/json' --data '{}' -s -o /dev/null -w "%{http_code}")
 while [[ "$http_status" != "200" ]]; do
   sleep 1
   http_status=$(curl --request POST --url http://localhost:5572/rc/noop --header '<auth-header>' --header 'Content-Type: application/json' --data '{}' -s -o /dev/null -w "%{http_code}")
 done
 
-set -x
+echo "RC server is online"
 
-curl --request POST \
+status=$(curl -s -o /dev/null -w "%{http_code}" \
+  --request POST \
   --url http://localhost:5572/options/set \
   --header 'Content-Type: application/json' \
   --header '<auth-header>' \
@@ -30,16 +32,15 @@ curl --request POST \
     "DirCacheTime": 360000000000000,
     "PollInterval": 15000000000,
     "Umask": 11,
-    "UID": 1001,
-    "GID": 100,
-    "DirPerms": 11,
-    "FilePerms": 11,
+    "UID": <user-id>,
+    "GID": <group-id>,
     "CacheMode": "full",
     "CacheMaxSize": "<cache-size>",
-    "cacheMaxAge": <cache-age>
+    "cacheMaxAge": <cache-age>,
+    "CachePollInterval": 900000000000
   },
   "mount": {
     "AllowOther": true
   }
-}'
-
+}')
+echo "Entered default settings, status: $status"

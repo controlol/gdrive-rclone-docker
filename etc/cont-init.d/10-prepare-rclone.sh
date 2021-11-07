@@ -88,7 +88,8 @@ for folder in "${folder_arr[@]}"; do
     # add mount command
     echo "[$rclone_folder] Adding mount command"
     {
-      echo "curl --request POST \\"
+      echo "status=\$(curl -s -o /dev/null -w \"%{http_code}\" \\"
+      echo "--request POST \\"
       echo "  --url http://localhost:5572/mount/mount \\"
       echo "  --header 'Content-Type: application/json' \\"
       echo "  --header '<auth-header>' \\"
@@ -96,7 +97,8 @@ for folder in "${folder_arr[@]}"; do
       echo "  \"fs\": \"$rclone_remote\","
       echo "  \"mountPoint\": \"/gdrive-cloud/$rclone_folder\","
       echo "  \"mountType\": \"mount\""
-      echo "}'"
+      echo "}')"
+      echo "echo \"[$rclone_folder] Mounted remote, status: \$status\""
       echo ""
     } >> run
 
@@ -122,7 +124,7 @@ if [ ! -f /setupcontainer ]; then
   sed -i "s,<rc-web-url>,$RC_WEB_URL,g" run
 
   # fill mount service
-  echo "[$rclone_folder] Filling rclone settings file"
+  echo "Filling rclone settings file"
   cd /etc/services.d/rclone-settings || exit 1
 
   cache_age=$(( 24 * 60 * 60 * 1000000000 ))
@@ -147,6 +149,8 @@ if [ ! -f /setupcontainer ]; then
   sed -i "s,<cache-size>,$LOCAL_CACHE_SIZE,g" run
   sed -i "s,<cache-age>,$cache_age,g" run
   sed -i "s,<auth-header>,$auth_header,g" run
+  sed -i "s,<user-id>,$PUID,g" run
+  sed -i "s,<group-id>,$PGID,g" run
 
   # temporary fix to keep script from restarting everytime
   echo "sleep infinity" >> run

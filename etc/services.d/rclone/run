@@ -1,6 +1,4 @@
 #!/usr/bin/with-contenv bash
-set -x
-
 cd /local
 
 if [ -z "${ENABLE_WEB}" ]; then
