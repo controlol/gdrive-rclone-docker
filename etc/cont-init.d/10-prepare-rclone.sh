@@ -40,7 +40,7 @@ for folder in "${folder_arr[@]}"; do
   no_crypt=${values[1]}
   upload_command=${values[2]}
   if [ -z "$no_crypt" ]; then
-    no_crypt="crypt"
+    no_crypt="nocrypt"
   fi
   if [ -z "$upload_command" ]; then
     upload_command="move"
@@ -63,7 +63,7 @@ for folder in "${folder_arr[@]}"; do
       # create the config
       /usr/bin/rclone config create "$rclone_remote" crypt remote="$remote" password="$pwobscure" password2="$pwobscurehash"
 
-      # add colon to reclone_remote if type is crypt
+      # add colon to rclone_remote if type is crypt
       # if this is not done files are copied to local disk and not to the remote
       rclone_remote="$rclone_remote:"
     fi
@@ -80,6 +80,9 @@ for folder in "${folder_arr[@]}"; do
       /local/{cache,gdrive}/"$rclone_folder" \
       /remote/"$rclone_folder" \
       /gdrive-cloud/"$rclone_folder"
+
+    # create the remote folder in google drive
+    /usr/bin/rclone mkdir "$RCLONE_REMOTE:/$rclone_folder"
 
     echo "[$rclone_folder] Creating cron task"
     mkdir -p /etc/crontabs
@@ -128,14 +131,14 @@ if [ ! -f /setupcontainer ]; then
   cd /etc/services.d/rclone-settings || exit 1
 
   cache_age=$(( 24 * 60 * 60 * 1000000000 ))
-  if [ ${LOCAL_CACHE_TIME: -1} == 's' ]; then
-    cache_age=$((${LOCAL_CACHE_TIME::-1} * 1000000000))
-  elif [ ${LOCAL_CACHE_TIME: -1} == 'm' ]; then
-    cache_age=$((${LOCAL_CACHE_TIME::-1} * 60 * 1000000000))
-  elif [ ${LOCAL_CACHE_TIME: -1} == 'H' ]; then
-    cache_age=$((${LOCAL_CACHE_TIME::-1} * 60 * 60 * 1000000000))
-  elif [ ${LOCAL_CACHE_TIME: -1} == 'd' ]; then
-    cache_age=$((${LOCAL_CACHE_TIME::-1} * 24 * 60 * 60 * 1000000000))
+  if [ ${CACHE_MAX_AGE: -1} == 's' ]; then
+    cache_age=$((${CACHE_MAX_AGE::-1} * 1000000000))
+  elif [ ${CACHE_MAX_AGE: -1} == 'm' ]; then
+    cache_age=$((${CACHE_MAX_AGE::-1} * 60 * 1000000000))
+  elif [ ${CACHE_MAX_AGE: -1} == 'H' ]; then
+    cache_age=$((${CACHE_MAX_AGE::-1} * 60 * 60 * 1000000000))
+  elif [ ${CACHE_MAX_AGE: -1} == 'd' ]; then
+    cache_age=$((${CACHE_MAX_AGE::-1} * 24 * 60 * 60 * 1000000000))
   fi
 
   auth_header=""
@@ -146,7 +149,7 @@ if [ ! -f /setupcontainer ]; then
     auth_header="${auth_header::-2}=="
   fi
 
-  sed -i "s,<cache-size>,$LOCAL_CACHE_SIZE,g" run
+  sed -i "s,<cache-size>,$CACHE_MAX_SIZE,g" run
   sed -i "s,<cache-age>,$cache_age,g" run
   sed -i "s,<auth-header>,$auth_header,g" run
   sed -i "s,<user-id>,$PUID,g" run
@@ -158,6 +161,13 @@ if [ ! -f /setupcontainer ]; then
   # remove password from env
   unset PASSWORD
   unset PASSWORD2
+  unset RC_WEB_PASS
 
   touch /setupcontainer
+fi
+
+# exclude partial files by default
+# more excluded rules can be added on new lines
+if [ ! -f /config/exclude_upload.txt ]; then
+  echo "*partial~" > /config/exclude_upload.txt
 fi
