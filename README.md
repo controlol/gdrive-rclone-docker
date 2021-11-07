@@ -4,6 +4,7 @@
 ![CI/CD](https://github.com/controlol/gdrive-rclone-docker/workflows/Docker/badge.svg)
 ![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/controlol/gdrive-rclone)
 ![GitHub top language](https://img.shields.io/github/languages/top/controlol/gdrive-rclone-docker?color=green)
+![GitHub milestone](https://img.shields.io/github/milestones/progress/controlol/gdrive-rclone-docker/4?label=Milestone%20V1)
 
 ## Introduction
 
@@ -68,7 +69,7 @@ docker run -d \
   -e TZ=Europe/Amsterdam \
   -e PASSWORD=yourpassword \
   -e PASSWORD2=yourpassword \
-  -e RCLONE_FOLDER=yourfolder \
+  -e RCLONE_FOLDERS=remote1,crypt,move;remote2,nocrypt,copy \
   -e RCLONE_REMOTE=yourremote \
   -e CACHE_MAX_SIZE=250G \
   -e CACHE_MAX_AGE=12h \
@@ -77,7 +78,7 @@ docker run -d \
   -v /path/to/remote:/remote:rw,shared \
   --cap-add SYS_ADMIN --device /dev/fuse \
   --restart unless-stopped \
-  ghcr.io/controlol/gdrive-rclone
+  controlol/gdrive-rclone
 ```
 
 ### Volumes
@@ -103,15 +104,26 @@ Every six hours files will be moved to Google Drive, a file is only considered i
 
 | Paramater | Function | Example |
 | --- | --- | --- |
-| RCLONE_FOLDER | The name of the remote subfolder you want to use | media |
-| RCLONE_REMOTE | The name of your rclone drive remote | gdrive |
+| RCLONE_FOLDERS | The name of the remote subfolder you want to use | media,crypt,move; |
+| RCLONE_REMOTE | The name of your [created rclone drive remote](#create-base-rclone-configuration) | gdrive |
 | PASSWORD | The password to encrypt your files | 64-128 char |
 | PASSWORD2 | The password salt to encrypt your files | 64-128 char |
 | CACHE_MAX_SIZE | The maximum size of cache | 250G |
 | CACHE_MAX_AGE | How long cache should be kept | 12h |
-| NO_CRYPT | Files are not encrypted if this variable is not empty | "yes" or "" |
-| USE_COPY | Files are copied if this variable is not empty | "yes" or "" |
+| ENABLE_WEB | If not empty the WebUI is enabled | "yes" or "" |
+| RC_WEB_USER | The username for the WebUI | user |
+| RC_WEB_PASS | The password for the WebUI | password |
 | TZ | The timezone of the container | Europe/Amsterdam |
+
+The RCLONE_FOLDERS environment can be used to create one or more remotes. Each remote is seperated by a semicolon, settings for the remote as seperated with a comma. There are two settings. You can skip one or both options, the default value will be used.
+The first setting is used to enable encryption of the uploaded folder, if you want to encrypt the uploaded folder enter `crypt` as the value.
+The second setting determines the command you want to use to upload, the default value is `move`. However you can choose `copy` if you want to keep all the files locally as well.
+
+#### Rclone remote examples
+| Option | Valid values | Default |
+| --- | --- | --- |
+| crypt | `crypt`, `nocrypt` | `nocrypt` |
+| command | `copy`, `move` | `move` |
 
 ### Notes
 It is recommended to use a random string for PASSWORD and PASSWORD2 between 64 and 128 characters, they should not be the same string.<br/>

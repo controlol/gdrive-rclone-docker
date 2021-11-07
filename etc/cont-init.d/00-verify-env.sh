@@ -6,13 +6,17 @@ read -a folder_arr <<< "$RCLONE_FOLDERS"
 IFS=','
 
 for folder in "${folder_arr[@]}"; do
-  read -a values <<< "$folder"
+  read -a values <<< $folder
   no_crypt=${values[1]}
-  if [ -z $no_crypt ]; then
-    no_crypt="crypt"
+  upload_command=${values[2]}
+  if [ -z "$no_crypt" ]; then
+    no_crypt="nocrypt"
+  fi
+  if [ -z "$upload_command" ]; then
+    upload_command="move"
   fi
 
-  if [ "${no_crypt}" == "crypt" ]; then
+  if [ "$no_crypt" == "crypt" ]; then
     if [ -z "${PASSWORD}" ]; then
       echo "Please set PASSWORD environment"
       exit 1
@@ -22,12 +26,20 @@ for folder in "${folder_arr[@]}"; do
       echo "Please set PASSWORD2 environment"
       exit 1
     fi
+  elif [ "$no_crypt" != "nocrypt" ]; then
+    echo "Please enter a valid 'crypt' value: '$folder'"
+    exit 1
+  fi
+
+  if [[ "$upload_command" != "move" && "$upload_command" != "copy" ]]; then
+    echo "Please enter a valid 'command' value: '$folder'"
+    exit 1
   fi
 done
 
 # these env must be set
 if [ -z "${RCLONE_FOLDERS}" ]; then
-  echo "Please set RCLONE_FOLDER environment"
+  echo "Please set RCLONE_FOLDERS environment"
   exit 1
 fi
 
