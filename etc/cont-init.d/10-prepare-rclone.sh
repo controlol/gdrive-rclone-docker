@@ -20,13 +20,22 @@ if [ ! -f "/config/rclone.conf" ]; then
   fi
 fi
 
+# split remote folders with ';'
 IFS=';'
-read -ar folder_arr <<< "$RCLONE_FOLDERS"
+read -a folder_arr <<< $RCLONE_FOLDERS
 
+# create local remote
+if ! grep -q "localdisk" /config/rclone.conf; then
+  /usr/bin/rclone config create localdisk local
+fi
+
+# set IFS for read command
 IFS=','
+# cd to rc settings folder to run sed on the run file
+cd /etc/services.d/rclone-settings || exit 1
 
 for folder in "${folder_arr[@]}"; do
-  read -ar values <<< "$folder"
+  read -a values <<< $folder
   rclone_folder=${values[0]}
   no_crypt=${values[1]}
   upload_command=${values[2]}
@@ -67,7 +76,10 @@ for folder in "${folder_arr[@]}"; do
   if [ ! -f /setupcontainer ]; then
     # create folders
     # the merged fs - local cache for gdrive - new local only files
-    mkdir -p /local/{cache,gdrive}/"$rclone_folder" /config/log
+    mkdir -p \
+      /local/{cache,gdrive}/"$rclone_folder" \
+      /remote/"$rclone_folder" \
+      /gdrive-cloud/"$rclone_folder"
 
     echo "[$rclone_folder] Creating cron task"
     mkdir -p /etc/crontabs
@@ -76,15 +88,18 @@ for folder in "${folder_arr[@]}"; do
     # add mount command
     echo "[$rclone_folder] Adding mount command"
     {
-      echo "curl --request POST",
-      echo "  --url http://localhost:5572/mount/mount",
-      echo "  --header 'Content-Type: application/json'",
-      echo "  --header '<auth-header>'",
-      echo "  --data \'{",
-      echo "  \"fs\": \"$rclone_remote\",",
-      echo "  \"mountPoint\": \"/gdrive-cloud/$rclone_folder\",",
-      echo "  \"mountType\": \"mount\"",
-      echo "}'"
+      echo "status=\$(curl -s -o /dev/null -w \"%{http_code}\" \\"
+      echo "--request POST \\"
+      echo "  --url http://localhost:5572/mount/mount \\"
+      echo "  --header 'Content-Type: application/json' \\"
+      echo "  --header '<auth-header>' \\"
+      echo "  --data '{"
+      echo "  \"fs\": \"$rclone_remote\","
+      echo "  \"mountPoint\": \"/gdrive-cloud/$rclone_folder\","
+      echo "  \"mountType\": \"mount\""
+      echo "}')"
+      echo "echo \"[$rclone_folder] Mounted remote, status: \$status\""
+      echo ""
     } >> run
 
     echo "[$rclone_folder] Mounting mergerfs $rclone_remote"
@@ -95,6 +110,7 @@ done
 # so we know the container has already been setup
 if [ ! -f /setupcontainer ]; then
   # link logs for rclone
+  mkdir -p /config/log
   ln -sf /config/log /var/log/rclone
 
   crontab /etc/crontabs/root
@@ -103,12 +119,12 @@ if [ ! -f /setupcontainer ]; then
   echo "Filling rclone service file"
   cd /etc/services.d/rclone || exit 1
 
-  sed -i "s,<cache-size>,$LOCAL_CACHE_SIZE,g" run
-  sed -i "s,<cache-time>,$LOCAL_CACHE_TIME,g" run
-  sed -i "s,<gdrive-rclone>,$rclone_remote,g" run
+  sed -i "s,<rc-user>,$RC_WEB_USER,g" run
+  sed -i "s,<rc-pass>,$RC_WEB_PASS,g" run
+  sed -i "s,<rc-web-url>,$RC_WEB_URL,g" run
 
   # fill mount service
-  echo "[$rclone_folder] Filling rclone settings file"
+  echo "Filling rclone settings file"
   cd /etc/services.d/rclone-settings || exit 1
 
   cache_age=$(( 24 * 60 * 60 * 1000000000 ))
@@ -122,8 +138,19 @@ if [ ! -f /setupcontainer ]; then
     cache_age=$((${LOCAL_CACHE_TIME::-1} * 24 * 60 * 60 * 1000000000))
   fi
 
+  auth_header=""
+  if [ ! -z $ENABLE_WEB ]; then
+    auth_data="$RC_WEB_USER:$RC_WEB_PASS"
+    auth_header="Authorization: Basic $(echo "$auth_data" | base64)"
+    # for some reason base64 ends with o= instead of ==, fix that
+    auth_header="${auth_header::-2}=="
+  fi
+
   sed -i "s,<cache-size>,$LOCAL_CACHE_SIZE,g" run
   sed -i "s,<cache-age>,$cache_age,g" run
+  sed -i "s,<auth-header>,$auth_header,g" run
+  sed -i "s,<user-id>,$PUID,g" run
+  sed -i "s,<group-id>,$PGID,g" run
 
   # temporary fix to keep script from restarting everytime
   echo "sleep infinity" >> run
@@ -131,7 +158,6 @@ if [ ! -f /setupcontainer ]; then
   # remove password from env
   unset PASSWORD
   unset PASSWORD2
-
 
   touch /setupcontainer
 fi

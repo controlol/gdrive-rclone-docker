@@ -1,14 +1,14 @@
 #!/usr/bin/with-contenv bash
-set -x
+cd /local
 
-if [ -z "${RC_WEB_URL}" ]; then
+if [ -z "${ENABLE_WEB}" ]; then
   /usr/bin/rclone rcd \
     --fast-list \
     --rc-web-gui-no-open-browser \
     --rc-no-auth
 else
   /usr/bin/rclone rcd \
-    --fast-list
+    --fast-list \
     --rc-web-gui \
     --rc-web-fetch-url <rc-web-url> \
     --rc-web-gui-update \
