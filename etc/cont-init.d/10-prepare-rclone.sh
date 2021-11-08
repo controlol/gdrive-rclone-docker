@@ -62,11 +62,11 @@ for folder in "${folder_arr[@]}"; do
 
       # create the config
       /usr/bin/rclone config create "$rclone_remote" crypt remote="$remote" password="$pwobscure" password2="$pwobscurehash"
-
-      # add colon to rclone_remote if type is crypt
-      # if this is not done files are copied to local disk and not to the remote
-      rclone_remote="$rclone_remote:"
     fi
+
+    # add colon to rclone_remote if type is crypt
+    # if this is not done files are copied to local disk and not to the remote
+    rclone_remote="$rclone_remote:"
   else
     # use unencrypted folder inside the base folder
     echo "[$rclone_folder] Uploaded files will not be encrypted!"
