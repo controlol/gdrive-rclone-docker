@@ -122,7 +122,42 @@ The second setting determines the command you want to use to upload, the default
 | crypt | `crypt`, `nocrypt` | `nocrypt` |
 | command | `copy`, `move` | `move` |
 
-### Notes
+## Mounting a remote volume to another container
+It is possible to use the remote folder in other containers. The easiest way would be to directly mount one (or more) of the subfolders directly to the container. However this will not work when the gdrive-rclone container is restarted. Therefor it is recommended to mount the remote parent folder directly in slave mode. This will give the container access to all of your mounts.
+
+### Example
+First option:
+```bash
+docker run -d \
+  -e FOLDERS=remote1,nocrypt,move \
+  -v /path/to/remote:/remote \
+  --cap-add SYS_ADMIN --device /dev/fuse \
+  controlol/gdrive-rclone:latest
+  
+docker run -d \
+  -v /path/to/remote/remote1:/container/path/remote1
+  ubuntu:latest
+```
+The Ubuntu container needs to be restarted after the gdrive-rclone container has restarted.
+
+Second option:
+```bash
+docker run -d \
+  -e FOLDERS=remote1,nocrypt,move \
+  -v /path/to/remote:/remote \
+  --cap-add SYS_ADMIN --device /dev/fuse \
+  controlol/gdrive-rclone:latest
+  
+docker run -d \
+  -v /path/to/remote:/container/path:slave
+  ubuntu:latest
+```
+The Ubuntu container does not have to be restarted after gdrive-rclone has restarted. After the gdrive-rclone container's state is up the subdirectories will work again.
+
+By no means are these examples complete with all the necessary volumes and environments but it shows a basic example how the folder structure works.
+
+
+## Notes
 It is recommended to use a random string for PASSWORD and PASSWORD2 between 64 and 128 characters, they should not be the same string.<br/>
 Your CACHE_MAX_SIZE should be at least as the size as the largest file you expect to upload.<br/>
 Setting USE_COPY will allow you to keep the files locally, they will still be uploaded on the same schedule.<br/>
