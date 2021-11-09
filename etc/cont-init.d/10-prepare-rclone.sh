@@ -77,7 +77,7 @@ for folder in "${folder_arr[@]}"; do
     # create folders
     # the merged fs - local cache for gdrive - new local only files
     mkdir -p \
-      /local/{cache,gdrive}/"$rclone_folder" \
+      /local/"$rclone_folder" \
       /remote/"$rclone_folder" \
       /gdrive-cloud/"$rclone_folder"
 
@@ -86,7 +86,7 @@ for folder in "${folder_arr[@]}"; do
 
     echo "[$rclone_folder] Creating cron task"
     mkdir -p /etc/crontabs
-    echo "0 */6 * * * /usr/bin/rclone rc sync/"$upload_command" srcFs=/local/gdrive/$rclone_folder dstFs="$rclone_remote"" >> /etc/crontabs/root
+    echo "0 */6 * * * /usr/bin/rclone rc sync/"$upload_command" srcFs=/local/$rclone_folder dstFs="$rclone_remote"" >> /etc/crontabs/root
 
     # add mount command
     echo "[$rclone_folder] Adding mount command"
@@ -104,10 +104,10 @@ for folder in "${folder_arr[@]}"; do
       echo "echo \"[$rclone_folder] Mounted remote, status: \$status\""
       echo ""
     } >> run
-
-    echo "[$rclone_folder] Mounting mergerfs $rclone_remote"
-    /usr/bin/mergerfs /local/gdrive/"$rclone_folder":/gdrive-cloud/"$rclone_folder" /remote/"$rclone_folder" -o rw,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=auto-full,nonempty
   fi
+
+  echo "[$rclone_folder] Mounting mergerfs $rclone_remote"
+  /usr/bin/mergerfs /local/"$rclone_folder":/gdrive-cloud/"$rclone_folder" /remote/"$rclone_folder" -o rw,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=auto-full,nonempty
 done
 
 # so we know the container has already been setup

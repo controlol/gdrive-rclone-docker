@@ -68,8 +68,9 @@ docker run -d \
   -e RCLONE_REMOTE=yourremote \
   -e CACHE_MAX_SIZE=250G \
   -e CACHE_MAX_AGE=12h \
-  -v /path/to/localstorage:/local \
   -v /path/to/config:/config \
+  -v /path/to/localstorage:/local \
+  -v /path/to/cache:/cache \
   -v /path/to/remote:/remote:rw,shared \
   --cap-add SYS_ADMIN --device /dev/fuse \
   --restart unless-stopped \
@@ -81,11 +82,12 @@ docker run -d \
 | Container path | Description | Type |
 | ---  | --- | --- |
 | /config | Contains the rclone configuration files | normal |
-| /local  | Contains the local and cache files | normal |
+| /local  | Contains the local files that have to be uploaded | normal |
+| /cache  | Contains the cached files from Google Drive | normal |
 | /remote | Use this folder to view and upload files | shared |
 
-Make sure you have created the rclone base configuration and copied it to /config/gdrive-rclone.conf.<br/>
-The /local directory has two folders, gdrive and cache. The cache folder has temporarily downloaded files from gdrive, and will not grow beyond CACHE_MAX_SIZE. The gdrive folder is temporary storage for files that still have to be uploaded to Google Drive.
+Make sure you have [created the rclone base configuration](#create-base-rclone-configuration) and copied it to /config/gdrive-rclone.conf.<br/>
+The /local directory is temporary storage for files that were copied to /remote but still have to be uploaded to Google Drive. The cache folder has temporarily downloaded files from gdrive, and will not grow beyond CACHE_MAX_SIZE.
 
 #### File uploads
 Every six hours files will be moved to Google Drive, a file is only considered if it is older than 6 hours
