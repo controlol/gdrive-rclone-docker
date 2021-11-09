@@ -77,7 +77,7 @@ for folder in "${folder_arr[@]}"; do
     # create folders
     # the merged fs - local cache for gdrive - new local only files
     mkdir -p \
-      /local/{cache,gdrive}/"$rclone_folder" \
+      /local/gdrive/"$rclone_folder" \
       /remote/"$rclone_folder" \
       /gdrive-cloud/"$rclone_folder"
 
