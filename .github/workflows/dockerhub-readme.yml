@@ -6,6 +6,8 @@ on:
     paths:
       - 'README.md'
       - '.github/workflows/dockerhub-readme.yml'
+  workflow_dispatch:
+      
 
 env:
   # github.repository as <account>/<repo>
