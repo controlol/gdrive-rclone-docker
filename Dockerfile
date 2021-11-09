@@ -34,8 +34,8 @@ RUN set -ex; \
 RUN set -ex; \
     mkdir -p /root/.config/rclone; \
     ln -s /root/.config/rclone /config; \
-    mkdir -p /root/.cache/rclone /local; \
-    ln -s /root/.cache/rclone /local/cache
+    mkdir -p /root/.cache/rclone; \
+    ln -s /root/.cache/rclone /cache
 
 RUN set -ex; \
     mkdir \
