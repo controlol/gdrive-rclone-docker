@@ -12,6 +12,7 @@ on:
       - 'README.md'
       - 'readme/**'
       - 'LICENSE'
+      - '.github/workflows/dockerhub-readme.yml'
 
 env:
   # Use docker.io for Docker Hub if empty
