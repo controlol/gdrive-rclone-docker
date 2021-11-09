@@ -6,7 +6,6 @@ on:
     paths:
       - 'README.md'
       - '.github/workflows/dockerhub-readme.yml'
-  workflow_dispatch:
       
 
 env:
@@ -17,6 +16,8 @@ jobs:
   dockerHubReadme:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+    
       # Update the docker hub readme and description
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v2.4.3
