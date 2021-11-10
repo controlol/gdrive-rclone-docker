@@ -1,3 +1,5 @@
-#!/usr/bin/with-contenv bash
+#!/usr/bin/with-contenv -S1
+if { s6-test ${1} -ne 0 }
+if { s6-test ${1} -ne 256 }
 
-/bin/fusermount -uz /gdrive-cloud/*
+s6-svscanctl -t $S6_SERVICE_FOLDER
