@@ -1,5 +1,8 @@
 #!/usr/bin/with-contenv bash
 
+# run this service only once
+s6-svc -O $S6_SERVICE_FOLDER/rclone-settings
+
 s6-svwait -u $S6_SERVICE_FOLDER/rclone
 
 # wait for the rcd servive to be online
