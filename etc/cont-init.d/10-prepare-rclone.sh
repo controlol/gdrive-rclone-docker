@@ -123,6 +123,9 @@ for folder in "${folder_arr[@]}"; do
       echo "s6-svscanctl -t $S6_SERVICE_FOLDER"
       echo ""
     } >> finish
+
+    # add execution permission
+    chmod +x run finish
   fi
 
   echo "[$rclone_folder] Mounting mergerfs $rclone_remote"
