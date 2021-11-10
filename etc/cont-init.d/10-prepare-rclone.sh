@@ -75,7 +75,7 @@ for folder in "${folder_arr[@]}"; do
     # create folders
     # the merged fs - local cache for gdrive - new local only files
     mkdir -p \
-      /local/{cache,gdrive}/"$rclone_folder" \
+      /local/gdrive/"$rclone_folder" \
       /remote/"$rclone_folder" \
       /gdrive-cloud/"$rclone_folder" \
       /etc/services.d/mount-$rclone_folder
@@ -96,22 +96,7 @@ for folder in "${folder_arr[@]}"; do
       echo "#!/usr/bin/with-contenv bash"
       echo ""
       echo "/usr/bin/rclone mount \\"
-      echo "--config=/config/rclone.conf \\"
-      echo "--log-level=INFO \\"
-      echo "--log-file=/var/log/rclone/mount-$rclone_folder.log \\"
-      echo "--user-agent=rclonemediadrive \\"
-      echo "--umask=022 \\"
-      echo "--uid=$PGID \\"
-      echo "--gid=$PUID \\"
-      echo "--allow-other \\"
-      echo "--timeout=1h \\"
-      echo "--poll-interval=15s \\"
-      echo "--dir-cache-time=1000h \\"
-      echo "--cache-dir=/local/cache/$rclone_folder \\"
-      echo "--vfs-cache-mode=full \\"
-      echo "--vfs-cache-max-size=$CACHE_MAX_SIZE \\"
-      echo "--vfs-cache-max-age=$CACHE_MAX_AGE \\"
-      echo "$rclone_remote /gdrive-cloud/$rclone_folder"
+      echo "--cache-dir=/local/cache \\"
       echo ""
     } >> run
 
