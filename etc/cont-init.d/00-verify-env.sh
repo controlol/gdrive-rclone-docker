@@ -65,14 +65,16 @@ if [ ! -z "${ENABLE_WEB}" ]; then
   fi
 fi
 
+s6_container_env=/var/run/s6/container_environment
+
 # add default gid and uid env
-printf "${PUID:-100}" > /var/run/s6/container_environment/PUID
-printf "${PGID:-100}" > /var/run/s6/container_environment/PGID
+printf "${PUID:-100}" > $s6_container_env/PUID
+printf "${PGID:-100}" > $s6_container_env/PGID
 
 # optional env, default values
-printf "${CACHE_MAX_AGE:-12h}" > /var/run/s6/container_environment/CACHE_MAX_AGE
+printf "${CACHE_MAX_AGE:-12h}" > $s6_container_env/CACHE_MAX_AGE
 
-printf "${TZ:-Europe/Amsterdam}" > /var/run/s6/container_environment/TZ
+printf "${TZ:-Europe/Amsterdam}" > $s6_container_env/TZ
 
 # default webgui repo
-printf "${RC_WEB_URL:-https://api.github.com/repos/controlol/rclone-webui/releases/latest}" > /var/run/s6/container_environment/RC_WEB_URL
+printf "${RC_WEB_URL:-https://api.github.com/repos/controlol/rclone-webui/releases/latest}" > $s6_container_env/RC_WEB_URL

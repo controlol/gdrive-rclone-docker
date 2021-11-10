@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bash
 
-s6-svwait -u /var/run/s6/services/rclone
+s6-svwait -u $S6_SERVICE_FOLDER/rclone
 
 # wait for the rcd servive to be online
 http_status=$(curl --request POST --url http://localhost:5572/rc/noop --header '<auth-header>' --header 'Content-Type: application/json' --data '{}' -s -o /dev/null -w "%{http_code}")

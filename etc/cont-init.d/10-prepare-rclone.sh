@@ -120,7 +120,7 @@ for folder in "${folder_arr[@]}"; do
       echo "if { s6-test ${1} -ne 0 }"
       echo "if { s6-test ${1} -ne 256 }"
       echo ""
-      echo "s6-svscanctl -t /var/run/s6/services"
+      echo "s6-svscanctl -t $S6_SERVICE_FOLDER"
       echo ""
     } >> finish
   fi

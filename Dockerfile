@@ -3,6 +3,7 @@ FROM ubuntu
 WORKDIR /
 
 ARG DEBIAN_FRONTEND=noninteractive
+ENV S6_SERVICE_FOLDER=/var/run/s6/services
 
 # install prerequisites
 RUN set -ex; \
