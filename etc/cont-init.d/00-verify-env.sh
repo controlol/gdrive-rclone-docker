@@ -70,6 +70,7 @@ s6_container_env=/var/run/s6/container_environment
 # add default gid and uid env
 printf "${PUID:-100}" > $s6_container_env/PUID
 printf "${PGID:-100}" > $s6_container_env/PGID
+printf "${UMASK:-000}" > $s6_container_env/UMASK
 
 # optional env, default values
 printf "${CACHE_MAX_AGE:-12h}" > $s6_container_env/CACHE_MAX_AGE

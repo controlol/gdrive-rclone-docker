@@ -100,7 +100,7 @@ for folder in "${folder_arr[@]}"; do
       echo "  --log-level=INFO \\"
       echo "  --log-file=/var/log/rclone/mount-$rclone_folder.log \\"
       echo "  --user-agent=rclonemediadrive \\"
-      echo "  --umask=022 \\"
+      echo "  --umask=$UMASK \\"
       echo "  --uid=$PGID \\"
       echo "  --gid=$PUID \\"
       echo "  --allow-other \\"

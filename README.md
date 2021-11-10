@@ -108,6 +108,7 @@ Every six hours files will be moved to Google Drive, a file is only considered i
 | ENABLE_WEB | If not empty the WebUI is enabled | "yes" or "" |
 | RC_WEB_USER | The username for the WebUI | user |
 | RC_WEB_PASS | The password for the WebUI | password |
+| UMASK | The password for the WebUI | 022 |
 | TZ | The timezone of the container | Europe/Amsterdam |
 
 The RCLONE_FOLDERS environment can be used to create one or more remotes. Each remote is seperated by a semicolon, settings for the remote as seperated with a comma. There are two settings. You can skip one or both options, the default value will be used.
