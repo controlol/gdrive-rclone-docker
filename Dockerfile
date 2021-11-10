@@ -33,9 +33,7 @@ RUN set -ex; \
 # setup config directory
 RUN set -ex; \
     mkdir -p /root/.config/rclone; \
-    ln -s /root/.config/rclone /config; \
-    mkdir -p /root/.cache/rclone; \
-    ln -s /root/.cache/rclone /cache
+    ln -s /root/.config/rclone /config
 
 RUN set -ex; \
     mkdir \

@@ -31,8 +31,6 @@ fi
 
 # set IFS for read command
 IFS=','
-# cd to rc settings folder to run sed on the run file
-cd /etc/services.d/rclone-settings || exit 1
 
 for folder in "${folder_arr[@]}"; do
   read -a values <<< $folder
@@ -77,37 +75,58 @@ for folder in "${folder_arr[@]}"; do
     # create folders
     # the merged fs - local cache for gdrive - new local only files
     mkdir -p \
-      /local/"$rclone_folder" \
+      /local/{cache,gdrive}/"$rclone_folder" \
       /remote/"$rclone_folder" \
-      /gdrive-cloud/"$rclone_folder"
+      /gdrive-cloud/"$rclone_folder" \
+      /etc/services.d/mount-$rclone_folder
+
+    # cd to mount service folder to create the service
+    cd /etc/services.d/mount-$rclone_folder || exit 1
 
     # create the remote folder in google drive
     /usr/bin/rclone mkdir "$RCLONE_REMOTE:/$rclone_folder"
 
     echo "[$rclone_folder] Creating cron task"
     mkdir -p /etc/crontabs
-    echo "0 */6 * * * /usr/bin/rclone rc sync/"$upload_command" srcFs=/local/$rclone_folder dstFs="$rclone_remote"" >> /etc/crontabs/root
+    echo "0 */6 * * * /usr/bin/rclone rc sync/"$upload_command" srcFs=/local/gdrive/$rclone_folder dstFs="$rclone_remote"" >> /etc/crontabs/root
 
     # add mount command
-    echo "[$rclone_folder] Adding mount command"
+    echo "[$rclone_folder] Adding mount service"
     {
-      echo "status=\$(curl -s -o /dev/null -w \"%{http_code}\" \\"
-      echo "--request POST \\"
-      echo "  --url http://localhost:5572/mount/mount \\"
-      echo "  --header 'Content-Type: application/json' \\"
-      echo "  --header '<auth-header>' \\"
-      echo "  --data '{"
-      echo "  \"fs\": \"$rclone_remote\","
-      echo "  \"mountPoint\": \"/gdrive-cloud/$rclone_folder\","
-      echo "  \"mountType\": \"mount\""
-      echo "}')"
-      echo "echo \"[$rclone_folder] Mounted remote, status: \$status\""
+      echo "#!/usr/bin/with-contenv bash"
+      echo ""
+      echo "/usr/bin/rclone mount \\"
+      echo "--config=/config/rclone.conf \\"
+      echo "--log-level=INFO \\"
+      echo "--log-file=/var/log/rclone/mount-$rclone_folder.log \\"
+      echo "--user-agent=rclonemediadrive \\"
+      echo "--umask=022 \\"
+      echo "--uid=$PGID \\"
+      echo "--gid=$PUID \\"
+      echo "--allow-other \\"
+      echo "--timeout=1h \\"
+      echo "--poll-interval=15s \\"
+      echo "--dir-cache-time=1000h \\"
+      echo "--cache-dir=/local/cache/$rclone_folder \\"
+      echo "--vfs-cache-mode=full \\"
+      echo "--vfs-cache-max-size=$CACHE_MAX_SIZE \\"
+      echo "--vfs-cache-max-age=$CACHE_MAX_AGE \\"
+      echo "$rclone_remote /gdrive-cloud/$rclone_folder"
       echo ""
     } >> run
+
+    {
+      echo "#!/usr/bin/with-contenv -S1"
+      echo "if { s6-test ${1} -ne 0 }"
+      echo "if { s6-test ${1} -ne 256 }"
+      echo ""
+      echo "s6-svscanctl -t /var/run/s6/services"
+      echo ""
+    } >> finish
   fi
 
   echo "[$rclone_folder] Mounting mergerfs $rclone_remote"
-  /usr/bin/mergerfs /local/"$rclone_folder":/gdrive-cloud/"$rclone_folder" /remote/"$rclone_folder" -o rw,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=auto-full,nonempty
+  /usr/bin/mergerfs /local/gdrive/"$rclone_folder":/gdrive-cloud/"$rclone_folder" /remote/"$rclone_folder" -o rw,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=auto-full,nonempty
 done
 
 # so we know the container has already been setup
@@ -118,7 +137,7 @@ if [ ! -f /setupcontainer ]; then
 
   crontab /etc/crontabs/root
 
-  # fill gdrive-rclone service
+  # sed gdrive-rclone service
   echo "Filling rclone service file"
   cd /etc/services.d/rclone || exit 1
 
@@ -126,7 +145,7 @@ if [ ! -f /setupcontainer ]; then
   sed -i "s,<rc-pass>,$RC_WEB_PASS,g" run
   sed -i "s,<rc-web-url>,$RC_WEB_URL,g" run
 
-  # fill mount service
+  # sed mount service
   echo "Filling rclone settings file"
   cd /etc/services.d/rclone-settings || exit 1
 
@@ -155,14 +174,7 @@ if [ ! -f /setupcontainer ]; then
   sed -i "s,<user-id>,$PUID,g" run
   sed -i "s,<group-id>,$PGID,g" run
 
-  # temporary fix to keep script from restarting everytime
-  echo "sleep infinity" >> run
-
-  # remove password from env
-  unset PASSWORD
-  unset PASSWORD2
-  unset RC_WEB_PASS
-
+  # tells us the setup was already done next time we restart the container
   touch /setupcontainer
 fi
 
@@ -171,3 +183,8 @@ fi
 if [ ! -f /config/exclude_upload.txt ]; then
   echo "*partial~" > /config/exclude_upload.txt
 fi
+
+# remove password from env
+unset PASSWORD
+unset PASSWORD2
+unset RC_WEB_PASS
