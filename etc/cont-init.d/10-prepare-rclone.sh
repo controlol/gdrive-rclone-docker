@@ -90,13 +90,28 @@ for folder in "${folder_arr[@]}"; do
     mkdir -p /etc/crontabs
     echo "0 */6 * * * /usr/bin/rclone rc sync/"$upload_command" srcFs=/local/gdrive/$rclone_folder dstFs="$rclone_remote"" >> /etc/crontabs/root
 
-    # add mount command
+    # add mount service
     echo "[$rclone_folder] Adding mount service"
     {
       echo "#!/usr/bin/with-contenv bash"
       echo ""
       echo "/usr/bin/rclone mount \\"
-      echo "--cache-dir=/local/cache \\"
+      echo "  --config=/config/rclone.conf \\"
+      echo "  --log-level=INFO \\"
+      echo "  --log-file=/var/log/rclone/mount-$rclone_folder.log \\"
+      echo "  --user-agent=rclonemediadrive \\"
+      echo "  --umask=022 \\"
+      echo "  --uid=$PGID \\"
+      echo "  --gid=$PUID \\"
+      echo "  --allow-other \\"
+      echo "  --timeout=1h \\"
+      echo "  --poll-interval=15s \\"
+      echo "  --dir-cache-time=1000h \\"
+      echo "  --cache-dir=/local/cache \\"
+      echo "  --vfs-cache-mode=full \\"
+      echo "  --vfs-cache-max-size=$CACHE_MAX_SIZE \\"
+      echo "  --vfs-cache-max-age=$CACHE_MAX_AGE \\"
+      echo "  $rclone_remote /gdrive-cloud/$rclone_folder"
       echo ""
     } >> run
 
@@ -113,7 +128,7 @@ for folder in "${folder_arr[@]}"; do
     chmod +x run finish
   fi
 
-  echo "[$rclone_folder] Mounting mergerfs $rclone_remote"
+  echo "[$rclone_folder] Mounting mergerfs"
   /usr/bin/mergerfs /local/gdrive/"$rclone_folder":/gdrive-cloud/"$rclone_folder" /remote/"$rclone_folder" -o rw,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=auto-full,nonempty
 done
 
