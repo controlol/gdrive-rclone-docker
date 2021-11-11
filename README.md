@@ -70,7 +70,6 @@ docker run -d \
   -e CACHE_MAX_AGE=12h \
   -v /path/to/config:/config \
   -v /path/to/localstorage:/local \
-  -v /path/to/cache:/cache \
   -v /path/to/remote:/remote:rw,shared \
   --cap-add SYS_ADMIN --device /dev/fuse \
   --restart unless-stopped \
@@ -83,11 +82,10 @@ docker run -d \
 | ---  | --- | --- |
 | /config | Contains the rclone configuration files | normal |
 | /local  | Contains the local files that have to be uploaded | normal |
-| /cache  | Contains the cached files from Google Drive | normal |
 | /remote | Use this folder to view and upload files | shared |
 
 Make sure you have [created the rclone base configuration](#create-base-rclone-configuration) and copied it to /config/gdrive-rclone.conf.<br/>
-The /local directory is temporary storage for files that were copied to /remote but still have to be uploaded to Google Drive. The cache folder has temporarily downloaded files from gdrive, and will not grow beyond CACHE_MAX_SIZE.
+The /local directory contains two folders, gdrive and cache. The gdrive folder is temporary storage for files that were copied to /remote but still have to be uploaded to Google Drive. The cache folder has temporarily downloaded files from gdrive, and will not grow beyond CACHE_MAX_SIZE. Each remote will have it's own subdirectory inside the cache and gdrive folder.
 
 #### File uploads
 Every six hours files will be moved to Google Drive, a file is only considered if it is older than 6 hours
@@ -110,6 +108,10 @@ Every six hours files will be moved to Google Drive, a file is only considered i
 | ENABLE_WEB | If not empty the WebUI is enabled | "yes" or "" |
 | RC_WEB_USER | The username for the WebUI | user |
 | RC_WEB_PASS | The password for the WebUI | password |
+| RC_WEB_URL | Custom weburl to a github api release endpoint | url |
+| PUID | The user id to take ownership of the files | 1000 |
+| PGID | The group id to take ownership of the files | 100 |
+| UMASK | The password for the WebUI | 000 |
 | TZ | The timezone of the container | Europe/Amsterdam |
 
 The RCLONE_FOLDERS environment can be used to create one or more remotes. Each remote is seperated by a semicolon, settings for the remote as seperated with a comma. There are two settings. You can skip one or both options, the default value will be used.

@@ -5,7 +5,9 @@ if [ -z "${ENABLE_WEB}" ]; then
   /usr/bin/rclone rcd \
     --fast-list \
     --rc-web-gui-no-open-browser \
-    --rc-no-auth
+    --rc-no-auth \
+    --log-file /config/log/rclone.log \
+    --log-level INFO
 else
   /usr/bin/rclone rcd \
     --fast-list \
@@ -15,5 +17,7 @@ else
     --rc-user <rc-user> \
     --rc-pass <rc-pass> \
     --rc-addr :5572 \
-    --rc-web-gui-no-open-browser
+    --rc-web-gui-no-open-browser \
+    --log-file /config/log/rclone.log \
+    --log-level INFO
 fi
