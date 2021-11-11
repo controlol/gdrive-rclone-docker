@@ -2,4 +2,5 @@
 
 set -e
 
-chown -R "$PUID":"$PGID" /config/*
+chown -R "$PUID":"$PGID" /config
+chmod -R 766 /config
