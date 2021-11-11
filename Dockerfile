@@ -4,6 +4,7 @@ WORKDIR /
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV S6_SERVICE_FOLDER=/var/run/s6/services
+ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
 
 # install prerequisites
 RUN set -ex; \
@@ -42,10 +43,6 @@ RUN set -ex; \
     /gdrive-cloud \
     /remote
 
-ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
-
-# s6 files
-ADD ./etc /etc
 
 # merged local and remote folder, should be mounted as a shared folder
 VOLUME /remote
@@ -54,5 +51,8 @@ VOLUME /local
 
 # config volume, should contain the RCLONE config file with gdrive remote named gdrive-rclone.conf
 VOLUME /config
+
+# s6 files
+ADD ./etc /etc
 
 ENTRYPOINT ["/init"]
