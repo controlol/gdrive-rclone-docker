@@ -28,7 +28,7 @@ RUN set -ex; \
     rm -rf ${TMP_DIR}
 
 # install rclone script
-ADD https://rclone.org/install.sh ${TMPDIR}/
+ADD https://rclone.org/install.sh ${TMP_DIR}/
 RUN set -ex; \
     chmod +x ${TMP_DIR}/install.sh; \
     ${TMP_DIR}/install.sh; \
