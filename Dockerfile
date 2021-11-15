@@ -3,6 +3,8 @@ FROM ubuntu
 WORKDIR /
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG TMP_DIR=/dockerinstalls
+
 ENV S6_SERVICE_FOLDER=/var/run/s6/services
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
 
@@ -19,18 +21,18 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/*
 
 # install s6-overlay
-ADD https://github.com/just-containers/s6-overlay/releases/download/v2.2.0.3/s6-overlay-amd64-installer /tmp/
+ADD https://github.com/just-containers/s6-overlay/releases/download/v2.2.0.3/s6-overlay-amd64-installer ${TMP_DIR}/
 RUN set -ex; \
-    chmod +x /tmp/s6-overlay-amd64-installer; \
-    /tmp/s6-overlay-amd64-installer /; \
-    rm -r /tmp
+    chmod +x ${TMP_DIR}/s6-overlay-amd64-installer; \
+    ${TMP_DIR}/s6-overlay-amd64-installer /; \
+    rm -rf ${TMP_DIR}
 
 # install rclone script
-ADD https://rclone.org/install.sh /tmp/
+ADD https://rclone.org/install.sh ${TMPDIR}/
 RUN set -ex; \
-    chmod +x /tmp/install.sh; \
-    /tmp/install.sh; \
-    rm -r /tmp
+    chmod +x ${TMP_DIR}/install.sh; \
+    ${TMP_DIR}/install.sh; \
+    rm -r ${TMP_DIR}
 
 # setup config directory
 RUN set -ex; \
