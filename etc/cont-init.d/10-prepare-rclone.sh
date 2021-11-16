@@ -89,9 +89,9 @@ for folder in "${folder_arr[@]}"; do
     echo "[$rclone_folder] Creating cron task"
     mkdir -p /etc/crontabs
     echo "0 */6 * * * /usr/bin/rclone rc sync/$upload_command srcFs=/local/gdrive/$rclone_folder dstFs=$rclone_remote --rc-user=$RC_WEB_USER --rc-pass=$RC_WEB_PASS _async=true" >> /etc/crontabs/root
-    
+
     if [ "$upload_command" == "move" ]; then
-      echo "0 */6 * * * /bin/find /local/gdrive/$rclone_folder -type d -empty -delete"
+      echo "0 */6 * * * /bin/find /local/gdrive/$rclone_folder -type d -empty -delete" >> /etc/crontabs/root
     fi
 
     # add mount service
@@ -130,10 +130,34 @@ for folder in "${folder_arr[@]}"; do
 
     # add execution permission
     chmod +x run finish
+
+    echo "[$rclone_folder] Mounting mergerfs"
+
+    mkdir /etc/services.d/mergerfs-$rclone_folder
+    cd /etc/services.d/mergerfs-$rclone_folder
+
+    {
+      echo "#!/usr/bin/with-contenv bash"
+      echo ""
+      echo "s6-svc -O $S6_SERVICE_FOLDER/mergerfs-$rclone_folder"
+      echo ""
+      echo "while ! grep -qs '/gdrive-cloud/$rclone_folder ' /proc/mounts; do"
+      echo "  sleep 1"
+      echo "done"
+      echo "echo \"done sleeping\""
+      echo "/usr/bin/mergerfs /local/gdrive/$rclone_folder:/gdrive-cloud/$rclone_folder /remote/$rclone_folder -o rw,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=auto-full,nonempty"
+      echo ""
+    } >> run
+
+    {
+      echo "#!/usr/bin/with-contenv bash"
+      echo ""
+      echo "/bin/fusermount -uz /remote/$rclone_folder"
+      echo ""
+    } >> finish
   fi
 
-  echo "[$rclone_folder] Mounting mergerfs"
-  /usr/bin/mergerfs /local/gdrive/"$rclone_folder":/gdrive-cloud/"$rclone_folder" /remote/"$rclone_folder" -o rw,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=auto-full,nonempty
+  chmod +x run finish
 done
 
 # so we know the container has already been setup
