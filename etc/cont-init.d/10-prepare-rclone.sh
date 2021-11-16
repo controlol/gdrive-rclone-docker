@@ -91,7 +91,7 @@ for folder in "${folder_arr[@]}"; do
     echo "0 */6 * * * /usr/bin/rclone rc sync/$upload_command srcFs=/local/gdrive/$rclone_folder dstFs=$rclone_remote --rc-user=$RC_WEB_USER --rc-pass=$RC_WEB_PASS _async=true" >> /etc/crontabs/root
 
     if [ "$upload_command" == "move" ]; then
-      echo "0 */6 * * * /bin/find /local/gdrive/$rclone_folder -type d -empty -delete" >> /etc/crontabs/root
+      echo "0 */6 * * * /bin/find /local/gdrive/$rclone_folder -type d -empty -delete" >> /etc/crontabs/root >> /etc/crontabs/root
     fi
 
     # add mount service
