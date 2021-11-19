@@ -26,7 +26,6 @@ status=$(curl -s -o /dev/null -w "%{http_code}" \
     "MaxDuration": 21600000000000
   },
   "filter": {
-    "MinAge": "6h",
     "ExcludeFrom": ["/config/exclude_upload.txt"]
   },
   "log": {
