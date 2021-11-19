@@ -120,7 +120,7 @@ for folder in "${folder_arr[@]}"; do
     } >> run
 
     {
-      echo "#!/usr/bin/with-contenv -S1"
+      echo "#!/usr/bin/with-contenv bash"
       echo "if { s6-test ${1} -ne 0 }"
       echo "if { s6-test ${1} -ne 256 }"
       echo ""
