@@ -1,7 +1,7 @@
 # gdrive-rclone-docker
 
 ![GitHub](https://img.shields.io/github/license/controlol/gdrive-rclone-docker)
-![CI/CD](https://github.com/controlol/gdrive-rclone-docker/workflows/Docker/badge.svg)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/controlol/gdrive-rclone-docker/Publish%20Docker%20Tag?logo=docker)
 ![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/controlol/gdrive-rclone)
 ![GitHub top language](https://img.shields.io/github/languages/top/controlol/gdrive-rclone-docker?color=green)
 ![GitHub milestone](https://img.shields.io/github/milestones/progress/controlol/gdrive-rclone-docker/4?label=Milestone%20V1)
