@@ -1,9 +1,10 @@
-FROM ubuntu
+FROM ubuntu:focal
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG TMP_DIR=/dockerinstalls
 
 ARG RCLONE_VERSION
+ARG MERGERFS_VERSION
 
 ENV S6_SERVICE_FOLDER=/var/run/s6/services
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
@@ -12,10 +13,8 @@ ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
 RUN set -ex; \
     apt update; \
     apt install -y --no-install-recommends \
-        curl \
         ca-certificates \
         unzip \
-        mergerfs \
         cron \
         tzdata; \
     rm -rf /var/lib/apt/lists/*
@@ -29,9 +28,17 @@ RUN set -ex; \
     ${TMP_DIR}/s6-overlay-amd64-installer /; \
     rm -rf ${TMP_DIR}/*
 
+# install mergerfs
+RUN set -eux; \
+    wget https://github.com/trapexit/mergerfs/releases/download/${MERGERFS_VERSION}/mergerfs-static-linux_amd64.tar.gz; \
+    mkdir mergerfs-static-linux_amd64; \
+    tar -xvf mergerfs-static-linux_amd64.tar.gz -C mergerfs-static-linux_amd64; \
+    cp mergerfs-static-linux_amd64/usr/local/bin/mergerfs /usr/bin/mergerfs; \
+    cp mergerfs-static-linux_amd64/usr/local/bin/mergerfs-fusermount /bin/fusermount
+
 # install rclone script
 RUN set -eux; \
-    curl https://github.com/rclone/rclone/releases/download/${RCLONE_VERSION}/rclone-${RCLONE_VERSION}-linux-amd64.zip -LO; \
+    wget https://github.com/rclone/rclone/releases/download/${RCLONE_VERSION}/rclone-${RCLONE_VERSION}-linux-amd64.zip; \
     unzip rclone-${RCLONE_VERSION}-linux-amd64.zip; \
     cd rclone-${RCLONE_VERSION}-linux-amd64; \
     cp rclone /usr/bin/; \
