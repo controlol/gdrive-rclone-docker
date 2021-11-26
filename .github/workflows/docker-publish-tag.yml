@@ -1,3 +1,5 @@
+name: Publish Docker Tag
+
 on:
   release:
     types: [created]
@@ -39,7 +41,6 @@ jobs:
           intver=${{ steps.t_latest.outputs.tag }}
           intver="${version: -2}" # get last two characters
           if [ "${intver::1}" == "-" ]; then
-          if [ "${{ steps.t_intermediate.outputs.is_intermediate }}" == "true" ]; then
             echo "::set-output name=version::${version::-2}" # latest tag without the last two characters
           else
             echo "::set-output name=version::${version}" # not a intermediate version
