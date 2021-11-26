@@ -3,6 +3,7 @@ FROM alpine:3
 ARG TMP_DIR=/dockerinstalls
 
 ARG RCLONE_VERSION
+ARG MERGERFS_VERSION
 
 ENV S6_SERVICE_FOLDER=/var/run/s6/services
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
@@ -31,7 +32,8 @@ RUN set -eux; \
     wget https://github.com/trapexit/mergerfs/releases/download/${MERGERFS_VERSION}/mergerfs-static-linux_amd64.tar.gz; \
     mkdir mergerfs-static-linux_amd64; \
     tar -xvf mergerfs-static-linux_amd64.tar.gz -C mergerfs-static-linux_amd64; \
-    cp mergerfs-static-linux_amd64/usr/local/bin/* /usr/bin
+    cp mergerfs-static-linux_amd64/usr/local/bin/mergerfs /usr/bin/mergerfs \
+    cp mergerfs-static-linux_amd64/usr/local/bin/mergerfs-fusermount /bin/fusermount
 
 # install rclone script
 RUN set -eux; \
