@@ -70,7 +70,7 @@ docker run -d \
   -e CACHE_MAX_AGE=12h \
   -v /path/to/config:/config \
   -v /path/to/localstorage:/local \
-  -v /path/to/remote:/remote:rw,shared \
+  -v /path/to/merged:/merged:rw,shared \
   --cap-add SYS_ADMIN --device /dev/fuse \
   --restart unless-stopped \
   controlol/gdrive-rclone
@@ -82,10 +82,10 @@ docker run -d \
 | ---  | --- | --- |
 | /config | Contains the rclone configuration files | normal |
 | /local  | Contains the local files that have to be uploaded | normal |
-| /remote | Use this folder to view and upload files | shared |
+| /merged | Use this folder to view and upload files | shared |
 
 Make sure you have [created the rclone base configuration](#create-base-rclone-configuration) and copied it to /config/gdrive-rclone.conf.<br/>
-The /local directory contains two folders, gdrive and cache. The gdrive folder is temporary storage for files that were copied to /remote but still have to be uploaded to Google Drive. The cache folder has temporarily downloaded files from gdrive, and will not grow beyond CACHE_MAX_SIZE. Each remote will have it's own subdirectory inside the cache and gdrive folder.
+The /local directory contains two folders, gdrive and cache. The gdrive folder is temporary storage for files that were copied to `/merged` but still have to be uploaded to Google Drive. The cache folder has temporarily downloaded files from gdrive, and will not grow beyond CACHE_MAX_SIZE. Each remote will have it's own subdirectory inside the cache and gdrive folder.
 
 #### File uploads
 Every six hours files will be moved to Google Drive, a file is only considered if it is older than 6 hours
@@ -114,7 +114,7 @@ Every six hours files will be moved to Google Drive, a file is only considered i
 | UMASK | The password for the WebUI | 000 |
 | TZ | The timezone of the container | Europe/Amsterdam |
 
-The RCLONE_FOLDERS environment can be used to create one or more remotes. Each remote is seperated by a semicolon, settings for the remote as seperated with a comma. There are two settings. You can skip one or both options, the default value will be used.
+The RCLONE_FOLDERS environment can be used to create one or more remotes. Each remote is seperated by a semicolon, settings for the remote are separated with a comma. There are two settings. You can skip one or both options, the default value will be used.
 The first setting is used to enable encryption of the uploaded folder, if you want to encrypt the uploaded folder enter `crypt` as the value.
 The second setting determines the command you want to use to upload, the default value is `move`. However you can choose `copy` if you want to keep all the files locally as well.
 
@@ -124,20 +124,20 @@ The second setting determines the command you want to use to upload, the default
 | crypt | `crypt`, `nocrypt` | `nocrypt` |
 | command | `copy`, `move` | `move` |
 
-## Mounting a remote volume to another container
-It is possible to use the remote folder in other containers. The easiest way would be to directly mount one (or more) of the subfolders directly to the container. However this will not work when the gdrive-rclone container is restarted. Therefor it is recommended to mount the remote parent folder directly in slave mode. This will give the container access to all of your mounts.
+## Mounting a merged volume to another container
+It is possible to use the merged folder in other containers. The easiest way would be to directly mount one (or more) of the subfolders directly to the container. However this will not work when the gdrive-rclone container is restarted. Therefor it is recommended to mount the merged parent folder directly in slave mode. This will give the container access to all of your mounts.
 
 ### Example
 First option:
 ```bash
 docker run -d \
   -e FOLDERS=remote1,nocrypt,move \
-  -v /path/to/remote:/remote \
+  -v /path/to/merged:/merged \
   --cap-add SYS_ADMIN --device /dev/fuse \
   controlol/gdrive-rclone:latest
   
 docker run -d \
-  -v /path/to/remote/remote1:/container/path/remote1
+  -v /path/to/merged/merged1:/container/path/merged1
   ubuntu:latest
 ```
 The Ubuntu container needs to be restarted after the gdrive-rclone container has restarted.
@@ -145,13 +145,13 @@ The Ubuntu container needs to be restarted after the gdrive-rclone container has
 Second option:
 ```bash
 docker run -d \
-  -e FOLDERS=remote1,nocrypt,move \
-  -v /path/to/remote:/remote \
+  -e FOLDERS=merged1,nocrypt,move \
+  -v /path/to/merged:/merged \
   --cap-add SYS_ADMIN --device /dev/fuse \
   controlol/gdrive-rclone:latest
   
 docker run -d \
-  -v /path/to/remote:/container/path:slave
+  -v /path/to/merged:/container/path:slave
   ubuntu:latest
 ```
 The Ubuntu container does not have to be restarted after gdrive-rclone has restarted. After the gdrive-rclone container's state is up the subdirectories will work again.

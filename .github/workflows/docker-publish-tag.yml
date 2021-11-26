@@ -18,6 +18,10 @@ jobs:
       contents: read
       packages: write
 
+    strategy:
+      matrix:
+        distro: [ alpine, focal ]
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -72,18 +76,23 @@ jobs:
             ${{ env.IMAGE_NAME }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            ${{ steps.t_latest.outputs.tag }}
-            latest
+            ${{ steps.t_latest.outputs.tag }}-${{ matrix.distro }}
+            ${{ matrix.distro }}
+            [[ ${{ matrix.distro }} == "alpine" ]] && latest
+
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
         uses: docker/build-push-action@v2.7.0
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' }}
+          file: ${{ matrix.distro }}.Dockerfile
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ matrix.distro }}
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ matrix.distro }},mode=max
           build-args: |
             RCLONE_VERSION=${{ steps.v_rclone.outputs.version }}
+            MERGERFS_VERSION=2.33.0
+          platforms: linux-amd64
