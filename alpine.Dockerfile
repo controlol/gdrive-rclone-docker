@@ -32,7 +32,7 @@ RUN set -eux; \
     wget https://github.com/trapexit/mergerfs/releases/download/${MERGERFS_VERSION}/mergerfs-static-linux_amd64.tar.gz; \
     mkdir mergerfs-static-linux_amd64; \
     tar -xvf mergerfs-static-linux_amd64.tar.gz -C mergerfs-static-linux_amd64; \
-    cp mergerfs-static-linux_amd64/usr/local/bin/mergerfs /usr/bin/mergerfs \
+    cp mergerfs-static-linux_amd64/usr/local/bin/mergerfs /usr/bin/mergerfs; \
     cp mergerfs-static-linux_amd64/usr/local/bin/mergerfs-fusermount /bin/fusermount
 
 # install rclone script
