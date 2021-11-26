@@ -77,7 +77,7 @@ for folder in "${folder_arr[@]}"; do
     mkdir -p \
       /local/gdrive/"$rclone_folder" \
       /merged/"$rclone_folder" \
-      /gdrive-cloud/"$rclone_folder" \
+      /cloud/"$rclone_folder" \
       /etc/services.d/mount-$rclone_folder
 
     # cd to mount service folder to create the service
@@ -116,7 +116,7 @@ for folder in "${folder_arr[@]}"; do
       echo "  --vfs-cache-mode=full \\"
       echo "  --vfs-cache-max-size=$CACHE_MAX_SIZE \\"
       echo "  --vfs-cache-max-age=$CACHE_MAX_AGE \\"
-      echo "  $rclone_remote /gdrive-cloud/$rclone_folder"
+      echo "  $rclone_remote /cloud/$rclone_folder"
       echo ""
     } >> run
 
@@ -135,7 +135,7 @@ for folder in "${folder_arr[@]}"; do
   fi
 
   echo "[$rclone_folder] Mounting mergerfs"
-  /usr/bin/mergerfs /local/gdrive/"$rclone_folder":/gdrive-cloud/"$rclone_folder" /merged/"$rclone_folder" -o rw,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=auto-full,nonempty
+  /usr/bin/mergerfs /local/gdrive/"$rclone_folder":/cloud/"$rclone_folder" /merged/"$rclone_folder" -o rw,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=auto-full,nonempty
 done
 
 # so we know the container has already been setup

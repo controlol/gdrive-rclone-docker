@@ -55,7 +55,7 @@ RUN set -ex; \
 RUN set -ex; \
     mkdir \
     # mount point for gdrive
-    /gdrive-cloud \
+    /cloud \
     /merged
 
 # merged local and merged folder, should be mounted as a shared folder
