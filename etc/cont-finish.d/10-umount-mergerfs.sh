@@ -1,3 +1,7 @@
 #!/usr/bin/with-contenv bash
 
-/bin/fusermount -uz /remote/*
+cd /remote
+for m in *; do
+  /bin/fusermount -uz "$m"
+  echo "Unmounted merged folder $m"
+done
