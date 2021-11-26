@@ -1,9 +1,9 @@
 FROM ubuntu
 
-WORKDIR /
-
 ARG DEBIAN_FRONTEND=noninteractive
 ARG TMP_DIR=/dockerinstalls
+
+ARG RCLONE_VERSION
 
 ENV S6_SERVICE_FOLDER=/var/run/s6/services
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
@@ -20,19 +20,26 @@ RUN set -ex; \
         tzdata; \
     rm -rf /var/lib/apt/lists/*
 
+WORKDIR $TMP_DIR
+
 # install s6-overlay
 ADD https://github.com/just-containers/s6-overlay/releases/download/v2.2.0.3/s6-overlay-amd64-installer ${TMP_DIR}/
 RUN set -ex; \
     chmod +x ${TMP_DIR}/s6-overlay-amd64-installer; \
     ${TMP_DIR}/s6-overlay-amd64-installer /; \
-    rm -rf ${TMP_DIR}
+    rm -rf ${TMP_DIR}/*
 
 # install rclone script
-ADD https://rclone.org/install.sh ${TMP_DIR}/
-RUN set -ex; \
-    chmod +x ${TMP_DIR}/install.sh; \
-    ${TMP_DIR}/install.sh; \
-    rm -r ${TMP_DIR}
+RUN set -eux; \
+    curl https://github.com/rclone/rclone/releases/download/${RCLONE_VERSION}/rclone-${RCLONE_VERSION}-linux-amd64.zip --output rclone.zip; \
+    unzip rclone.zip; \
+    cd rclone-*-linux-amd64; \
+    cp rclone /usr/bin/; \
+    chown root:root /usr/bin/rclone; \
+    chmod 755 /usr/bin/rclone; \
+    rm -r ${TMP_DIR}/*
+
+WORKDIR /
 
 # setup config directory
 RUN set -ex; \
@@ -44,7 +51,6 @@ RUN set -ex; \
     # mount point for gdrive
     /gdrive-cloud \
     /remote
-
 
 # merged local and remote folder, should be mounted as a shared folder
 VOLUME /remote
