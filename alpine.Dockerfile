@@ -56,10 +56,10 @@ RUN set -ex; \
     mkdir \
     # mount point for gdrive
     /gdrive-cloud \
-    /remote
+    /merged
 
-# merged local and remote folder, should be mounted as a shared folder
-VOLUME /remote
+# merged local and merged folder, should be mounted as a shared folder
+VOLUME /merged
 # local cache and files
 VOLUME /local
 
