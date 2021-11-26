@@ -122,10 +122,11 @@ for folder in "${folder_arr[@]}"; do
 
     {
       echo "#!/usr/bin/with-contenv bash"
-      echo "if { s6-test ${1} -ne 0 }"
-      echo "if { s6-test ${1} -ne 256 }"
+      echo "if [[ \"$(s6-test ${1})\" != 0 && \"$(s6-test ${1})\" != 256 ]]; then"
       echo ""
       echo "s6-svscanctl -t $S6_SERVICE_FOLDER"
+      echo ""
+      echo "fi"
       echo ""
     } >> finish
 
