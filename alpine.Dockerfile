@@ -20,6 +20,7 @@ WORKDIR $TMP_DIR
 # install s6-overlay
 ADD https://github.com/just-containers/s6-overlay/releases/download/v2.2.0.3/s6-overlay-amd64-installer ${TMP_DIR}/
 RUN set -ex; \
+    cd /; \
     chmod +x ${TMP_DIR}/s6-overlay-amd64-installer; \
     ${TMP_DIR}/s6-overlay-amd64-installer /; \
     rm -rf ${TMP_DIR}/*
