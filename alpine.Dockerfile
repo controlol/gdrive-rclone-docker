@@ -13,7 +13,8 @@ RUN set -ex; \
         curl \
         ca-certificates \
         cronie \
-        tzdata
+        tzdata \
+        bash
 
 WORKDIR $TMP_DIR
 
