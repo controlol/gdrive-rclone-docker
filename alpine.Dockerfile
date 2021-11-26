@@ -11,7 +11,6 @@ ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
 # install prerequisites
 RUN set -ex; \
     apk add --update-cache \
-        curl \
         ca-certificates \
         cronie \
         tzdata \
