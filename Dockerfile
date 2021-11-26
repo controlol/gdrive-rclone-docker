@@ -31,9 +31,9 @@ RUN set -ex; \
 
 # install rclone script
 RUN set -eux; \
-    curl https://github.com/rclone/rclone/releases/download/${RCLONE_VERSION}/rclone-${RCLONE_VERSION}-linux-amd64.zip --output rclone.zip; \
-    unzip rclone.zip; \
-    cd rclone-*-linux-amd64; \
+    curl https://github.com/rclone/rclone/releases/download/${RCLONE_VERSION}/rclone-${RCLONE_VERSION}-linux-amd64.zip -LO; \
+    unzip rclone-${RCLONE_VERSION}-linux-amd64.zip; \
+    cd rclone-${RCLONE_VERSION}-linux-amd64; \
     cp rclone /usr/bin/; \
     chown root:root /usr/bin/rclone; \
     chmod 755 /usr/bin/rclone; \
