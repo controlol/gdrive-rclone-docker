@@ -1,0 +1,120 @@
+name: Create tag version
+
+on:
+  schedule:
+    - cron: '45 * * * *'
+  workflow_dispatch:
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Get Current Tag
+        id: t_latest
+        uses: WyriHaximus/github-action-get-previous-tag@v1
+
+      - name: Get rclone/rclone release
+        id: t_rclone
+        run: |
+          EXT_RELEASE=$(curl -s "https://api.github.com/repos/rclone/rclone/releases/latest" | jq -r '. | .tag_name')
+          if [ -z "${EXT_RELEASE}" ] || [ "${EXT_RELEASE}" == "null" ]; then
+            echo "::error ::Invalid rclone Release"
+            exit 1
+          fi
+          echo "::set-output name=tag::${EXT_RELEASE}"
+
+      - name: Is Current Release Intermediate
+        id: t_intermediate
+        run: |
+          version=${{ steps.t_latest.outputs.tag }}
+          version="${version: -2}" # get last two characters
+          if [ "${version::1}" == "-" ]; then
+              if [ "${version: -1}" == "9" ]; then # reject if 9 intermediate releases, not supported
+                echo "::error ::WOW, you have created 9 intermediate releases! Take it slow or create a release manually."
+                exit 1
+              fi
+            echo "::set-output name=is_intermediate::true"
+            echo "::set-output name=version::${version: -1}"
+          fi
+
+      - name: Get Version Without Intermediate
+        id: v_plex
+        run: |
+          version=${{ steps.t_latest.outputs.tag }}
+          if [ "${{ steps.t_intermediate.outputs.is_intermediate }}" == "true" ]; then
+            echo "::set-output name=version::${version::-2}" # latest tag without the last two characters
+          else
+            echo "::set-output name=version::${version}" # not a intermediate version
+          fi
+
+      - name: Check Version Bump
+        id: v_bump
+        run: |
+          echo "\"${{ steps.t_latest.outputs.tag }}\" - \"${{ steps.t_rclone.outputs.tag }}\""
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ steps.v_plex.outputs.version }}" == "${{ steps.t_rclone.outputs.tag }}" ]]; then
+            echo "::warning ::Creating Intermediate Tag Release By Manual Trigger"
+            echo "::set-output name=intermediate::true"
+            echo "::set-output name=release::true"
+          elif [ "${{ steps.v_plex.outputs.version }}" != "${{ steps.t_rclone.outputs.tag }}" ]; then
+            echo "::notice ::Creating Tag With New hotio/plex Release"
+            echo "::set-output name=release::true"
+          else
+            echo "::notice ::Not Updating Because There Is No New hotio/plex Release"
+          fi
+
+      - name: Generate Intermediate Version
+        if: ${{ steps.v_bump.outputs.intermediate == 'true' }}
+        id: v_release
+        run: |
+          if [ "${{ steps.t_intermediate.outputs.is_intermediate }}" == "true" ]; then    # this is already is a intermediate version, bump it
+            version_intermediate=${{ steps.t_intermediate.outputs.version }}
+            intermediate=$(( ${version_intermediate: -1} + 1 ))                           # get the last character, which should be a number, and add 1
+          else                                                                            # create intermediate version
+            intermediate=1
+          fi
+          echo "::set-output name=intermediate::${intermediate}"                          # output intermediate version number
+          echo "::set-output name=tag::${{ steps.t_rclone.outputs.tag }}-${intermediate}"  # output the intermediate version
+
+#      - name: Get Commits Since Last Tag
+#        if: ${{ steps.v_bump.outputs.release == 'true' }}
+#        id: commits
+#        run: |
+#          count=$(git rev-list ${{ steps.t_latest.outputs.tag }}.. --count)
+#          echo "::set-output name=count::${count}"
+#
+#      - name: Get Closed Issues By Commit
+#        if: ${{ steps.v_bump.outputs.release == 'true' }}
+#        uses: TheBusyBiscuit/recently-closed-issues@master
+#        id: issues
+#        token: ${{ secrets.GITHUB_TOKEN }}
+#        max_commits: ${{ steps.commits.outputs.count }}
+
+      - name: Generate Release Body
+        if: ${{ steps.v_bump.outputs.release == 'true' }}
+        id: body
+        run: |
+          if [ "${{ steps.v_bump.outputs.intermediate }}" == "true" ]; then
+            echo "::set-output name=message::Manual update to intermediate version ${{ steps.v_release.outputs.intermediate }}. A intermediate update only includes changes made in this repository, meaning this is not a new Rclone update."
+          else
+            echo "::set-output name=message::Automatic version bump to ${{ steps.t_rclone.outputs.tag }}"
+          fi
+
+      - name: Create Release
+        if: ${{ steps.v_bump.outputs.release == 'true' }}
+        uses: softprops/action-gh-release@v0.1.14
+        with:
+          tag_name: ${{ steps.v_release.outputs.tag || steps.t_rclone.outputs.tag }}
+          name: ${{ steps.v_release.outputs.tag || steps.t_rclone.outputs.tag }}
+          body: "${{ steps.body.outputs.message }}"
+          draft: false
+          prerelease: false
+          token: ${{ secrets.REPO_TOKEN }}
