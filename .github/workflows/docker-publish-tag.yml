@@ -1,0 +1,88 @@
+on:
+  release:
+    types: [created]
+
+env:
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: controlol/gdrive-rclone
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Get Latest Tag
+        id: t_latest
+        uses: WyriHaximus/github-action-get-previous-tag@v1
+
+      - name: checkout to latest tag
+        run: git checkout tags/${{ steps.t_latest.outputs.tag }} -b latest
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Get Version Without Intermediate
+        id: v_rclone
+        run: |
+          version=${{ steps.t_latest.outputs.tag }}
+          intver=${{ steps.t_latest.outputs.tag }}
+          intver="${version: -2}" # get last two characters
+          if [ "${intver::1}" == "-" ]; then
+          if [ "${{ steps.t_intermediate.outputs.is_intermediate }}" == "true" ]; then
+            echo "::set-output name=version::${version::-2}" # latest tag without the last two characters
+          else
+            echo "::set-output name=version::${version}" # not a intermediate version
+          fi
+
+      # Login against a Docker registry except on PR
+      # https://github.com/docker/login-action
+      - name: Login to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1.10.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1.10.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Extract metadata (tags, labels) for Docker
+      # https://github.com/docker/metadata-action
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v3.6.0
+        with:
+          images: |
+            ${{ env.IMAGE_NAME }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            ${{ steps.t_latest.outputs.tag }}
+            latest
+      # Build and push Docker image with Buildx (don't push on PR)
+      # https://github.com/docker/build-push-action
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2.7.0
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
+          build-args: |
+            RCLONE_VERSION=${{ steps.v_rclone.outputs.version }}
