@@ -13,6 +13,7 @@ ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
 RUN set -ex; \
     apt update; \
     apt install -y --no-install-recommends \
+        fuse \
         curl \
         ca-certificates \
         unzip \
@@ -27,15 +28,13 @@ ADD https://github.com/just-containers/s6-overlay/releases/download/v2.2.0.3/s6-
 RUN set -ex; \
     chmod +x ${TMP_DIR}/s6-overlay-amd64-installer; \
     ${TMP_DIR}/s6-overlay-amd64-installer /; \
-    rm -rf ${TMP_DIR}/*
+    rm -rf ${TMP_DIR}
 
 # install mergerfs
-ADD https://github.com/trapexit/mergerfs/releases/download/${MERGERFS_VERSION}/mergerfs-static-linux_amd64.tar.gz ${TMP_DIR}/
+ADD https://github.com/trapexit/mergerfs/releases/download/${MERGERFS_VERSION}}/mergerfs_${MERGERFS_VERSION}}.ubuntu-focal_amd64.deb ${TMP_DIR}/
 RUN set -eux; \
-    mkdir mergerfs-static-linux_amd64; \
-    tar -xvf mergerfs-static-linux_amd64.tar.gz -C mergerfs-static-linux_amd64; \
-    cp mergerfs-static-linux_amd64/usr/local/bin/mergerfs /usr/bin/mergerfs; \
-    cp mergerfs-static-linux_amd64/usr/local/bin/mergerfs-fusermount /bin/fusermount
+    dpkg -i mergerfs_${MERGERFS_VERSION}}.ubuntu-focal_amd64.deb; \
+    rm -r ${TMP_DIR}
 
 # install rclone script
 ADD https://github.com/rclone/rclone/releases/download/${RCLONE_VERSION}/rclone-${RCLONE_VERSION}-linux-amd64.zip ${TMP_DIR}/
@@ -45,7 +44,7 @@ RUN set -eux; \
     cp rclone /usr/bin/; \
     chown root:root /usr/bin/rclone; \
     chmod 755 /usr/bin/rclone; \
-    rm -r ${TMP_DIR}/*
+    rm -r ${TMP_DIR}
 
 WORKDIR /
 
