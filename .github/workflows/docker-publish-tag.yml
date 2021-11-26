@@ -69,7 +69,9 @@ jobs:
       - name: Add latest if Alpine
         id: addlatest
         run: |
-          [[ ${{ matrix.distro }} == "alpine" ]] && echo "::set-output name=latest::latest"
+          if [ "${{ matrix.distro }}" == "alpine" ]; then
+            echo "::set-output name=latest::latest"
+          fi
 
       # Extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action
@@ -100,4 +102,4 @@ jobs:
           build-args: |
             RCLONE_VERSION=${{ steps.v_rclone.outputs.version }}
             MERGERFS_VERSION=2.33.0
-          platforms: linux-amd64
+          platforms: linux/amd64
