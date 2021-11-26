@@ -13,6 +13,7 @@ ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
 RUN set -ex; \
     apt update; \
     apt install -y --no-install-recommends \
+        wget \
         ca-certificates \
         unzip \
         cron \
