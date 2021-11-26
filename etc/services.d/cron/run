@@ -1,3 +1,7 @@
 #!/usr/bin/with-contenv bash
 
-exec /usr/sbin/cron -f
+if [ -f /usr/sbin/cron ]; then # ubuntu
+  exec /usr/sbin/cron -f
+else # alpine
+  exec /usr/sbin/crond -n
+fi
