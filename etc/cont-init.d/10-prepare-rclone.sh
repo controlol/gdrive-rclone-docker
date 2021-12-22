@@ -116,6 +116,7 @@ for folder in "${folder_arr[@]}"; do
       echo "  --vfs-cache-mode=full \\"
       echo "  --vfs-cache-max-size=$CACHE_MAX_SIZE \\"
       echo "  --vfs-cache-max-age=$CACHE_MAX_AGE \\"
+      echo "  --drive-chunk-size=$DRIVE_CHUNK_SIZE \\"
       echo "  $rclone_remote /cloud/$rclone_folder"
       echo ""
     } >> run

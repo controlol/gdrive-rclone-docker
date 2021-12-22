@@ -79,3 +79,15 @@ printf "${TZ:-Europe/Amsterdam}" > $s6_container_env/TZ
 
 # default webgui repo
 printf "${RC_WEB_URL:-https://api.github.com/repos/controlol/rclone-webui/releases/latest}" > $s6_container_env/RC_WEB_URL
+
+if [[ -z $DRIVE_CHUNK_SIZE ]]; then
+  # default chunk size
+  printf "8M" > $s6_container_env/DRIVE_CHUNK_SIZE
+else
+  # test for valid chunk size
+  if [[ $DRIVE_CHUNK_SIZE =~ ^(1|2|4|8|16|32|64|128|256|512)M$ ]]; then
+    printf "$DRIVE_CHUNK_SIZE" > $s6_container_env/DRIVE_CHUNK_SIZE
+  else
+    printf "Unsupported value for DRIVE_CHUNK_SIZE\nSupported values: 2 ^ n, where n >=0 && n < 10\nDefault: 8M\n"
+  fi
+fi
