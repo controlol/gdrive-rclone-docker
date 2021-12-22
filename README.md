@@ -109,6 +109,7 @@ Every six hours files will be moved to Google Drive, a file is only considered i
 | RC_WEB_USER | The username for the WebUI | user |
 | RC_WEB_PASS | The password for the WebUI | password |
 | RC_WEB_URL | Custom weburl to a github api release endpoint | url |
+| DRIVE_CHUNK_SIZE | Upload chunk size | 8M |
 | PUID | The user id to take ownership of the files | 1000 |
 | PGID | The group id to take ownership of the files | 100 |
 | UMASK | The password for the WebUI | 000 |
